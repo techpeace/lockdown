@@ -259,7 +259,9 @@ module Lockdown
         end
 
         if Lockdown.rails_app?
-          Dependencies.clear
+          unless ENV['RAILS_ENV'] == 'production'
+            Dependencies.clear
+          end
         end
       end
 

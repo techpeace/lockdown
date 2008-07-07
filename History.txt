@@ -1,3 +1,6 @@
+== 0.5.12 2008-07-02
+* Fix: Added production environment conditional to Dependencies.clear.
+
 == 0.5.11 2008-06-25
 * Update: Classy Inheritance to current version 0.4.4
 
