@@ -9,9 +9,7 @@ if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 1
 end
 
 class LockdownGenerator < Rails::Generator::Base
-  attr_accessor :file_name
-  attr_accessor :action_name
-
+  attr_accessor :file_name, :action_name, :namespace, :view_path, :controller_path
   def initialize(runtime_args, runtime_options = {})
     super
     if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 1
@@ -19,20 +17,29 @@ class LockdownGenerator < Rails::Generator::Base
     else
       @action_name = "@action_name"
     end
+    @namespace = options[:namespace] if options[:namespace]
+    # so if the namespace option exists it sets the correct view path and controller path,
+    # I didn't change the helpers path, since they are automatically loaded anyway in application_helper...
+    if @namespace
+      @view_path = "app/views/#{@namespace}"
+      @controller_path = "app/controllers/#{@namespace}"
+    else
+      @view_path = "app/views"
+      @controller_path = "app/controllers"
+    end
   end
 
   def manifest
+    puts @namespace
     record do |m|
       # Ensure appropriate folder(s) exists
       m.directory 'app/helpers'
-      m.directory 'app/views'
-      m.directory 'app/controllers'
-
+      m.directory "#{@view_path}"
+      m.directory "#{@controller_path}"
       if options[:all]
         options[:management] = true
         options[:login] = true
       end
-
       add_management(m) if options[:management]
 
       add_login(m) if options[:login]
@@ -44,18 +51,18 @@ class LockdownGenerator < Rails::Generator::Base
   protected
 
   def add_management(m)
-    m.directory 'app/views/users'
-    m.directory 'app/views/user_groups'
-    m.directory 'app/views/permissions'
+    m.directory "#{@view_path}/users"
+    m.directory "#{@view_path}/user_groups"
+    m.directory "#{@view_path}/permissions"
 
     m.template "app/controllers/permissions_controller.rb",
-      "app/controllers/permissions_controller.rb"
+      "#{@controller_path}/permissions_controller.rb"
 
     m.template "app/controllers/users_controller.rb",
-      "app/controllers/users_controller.rb"
+      "#{@controller_path}/users_controller.rb"
 
     m.template "app/controllers/user_groups_controller.rb",
-      "app/controllers/user_groups_controller.rb"
+      "#{@controller_path}/user_groups_controller.rb"
 
     m.template "app/helpers/permissions_helper.rb",
       "app/helpers/permissions_helper.rb"
@@ -71,31 +78,33 @@ class LockdownGenerator < Rails::Generator::Base
     copy_views(m, "user_groups")
 
     m.template "app/views/permissions/_data.html.erb",
-      "app/views/permissions/_data.html.erb"
+      "#{@view_path}/permissions/_data.html.erb"
 
     m.template "app/views/permissions/index.html.erb",
-      "app/views/permissions/index.html.erb"
+      "#{@view_path}/permissions/index.html.erb"
 
     m.template "app/views/permissions/show.html.erb",
-      "app/views/permissions/show.html.erb"
+      "#{@view_path}/permissions/show.html.erb"
 
-    m.route_resources "permissions"
-    m.route_resources "user_groups"
-    m.route_resources "users"
+    if @namespace.blank?
+      m.route_resources "permissions"
+      m.route_resources "user_groups"
+      m.route_resources "users"
+    end
 
     add_management_permissions(m)
   end
 
   def add_login(m)
-    m.directory 'app/views/sessions'
+    m.directory "#{@view_path}/sessions"
 
-    m.file "app/controllers/sessions_controller.rb",
-      "app/controllers/sessions_controller.rb"
+    m.template "app/controllers/sessions_controller.rb",
+      "#{@controller_path}/sessions_controller.rb"
 
-    m.file "app/views/sessions/new.html.erb",
-      "app/views/sessions/new.html.erb"
+    m.template "app/views/sessions/new.html.erb",
+      "#{@view_path}/sessions/new.html.erb"
     
-    m.route_resources "sessions"
+    m.route_resources "sessions" if @namespace.blank?
 
     add_login_permissions(m)
     add_login_routes(m)
@@ -158,26 +167,26 @@ class LockdownGenerator < Rails::Generator::Base
   end # add_migrations
 
   def copy_views(m, vw)
-    m.template "app/views/#{vw}/_data.html.erb", "app/views/#{vw}/_data.html.erb"
-    m.template "app/views/#{vw}/_form.html.erb", "app/views/#{vw}/_form.html.erb"
-    m.template "app/views/#{vw}/index.html.erb", "app/views/#{vw}/index.html.erb"
-    m.template "app/views/#{vw}/show.html.erb", "app/views/#{vw}/show.html.erb"
-    m.template "app/views/#{vw}/edit.html.erb", "app/views/#{vw}/edit.html.erb"
-    m.template "app/views/#{vw}/new.html.erb", "app/views/#{vw}/new.html.erb"
+    m.template "app/views/#{vw}/_data.html.erb", "#{@view_path}/#{vw}/_data.html.erb"
+    m.template "app/views/#{vw}/_form.html.erb", "#{@view_path}/#{vw}/_form.html.erb"
+    m.template "app/views/#{vw}/index.html.erb", "#{@view_path}/#{vw}/index.html.erb"
+    m.template "app/views/#{vw}/show.html.erb", "#{@view_path}/#{vw}/show.html.erb"
+    m.template "app/views/#{vw}/edit.html.erb", "#{@view_path}/#{vw}/edit.html.erb"
+    m.template "app/views/#{vw}/new.html.erb", "#{@view_path}/#{vw}/new.html.erb"
   end
 
   def add_login_permissions(m)
-    add_permissions m, "set_permission :sessions_management, all_methods(:sessions)"
+    add_permissions m, "set_permission :sessions_management, all_methods(:#{@namespace.blank? ? "sessions" : "admin__sessions"})"
     
     add_predefined_user_group m, "set_public_access :sessions_management"
   end
 
   def add_management_permissions(m)
     perms = []
-    perms << "set_permission :users_management, all_methods(:users)"
-    perms << "set_permission :user_groups_management, all_methods(:user_groups)"
-    perms << "set_permission :permissions_management, all_methods(:permissions)"
-    perms << "set_permission :my_account, only_methods(:users, :edit, :update, :show)"
+    perms << "set_permission :users_management, all_methods(:#{@namespace.blank? ? "users" : "#{@namespace}__users"})"
+    perms << "set_permission :user_groups_management, all_methods(:#{@namespace.blank? ? "user_groups" : "#{@namespace}__user_groups"})"
+    perms << "set_permission :permissions_management, all_methods(:#{@namespace.blank? ? "permissions" : "#{@namespace}__permissions"})"
+    perms << "set_permission :my_account, only_methods(:#{@namespace.blank? ? "users" : "#{@namespace}__users"}, :edit, :update, :show)"
 
     add_permissions m, perms.join("\n  ")
     
@@ -199,14 +208,22 @@ class LockdownGenerator < Rails::Generator::Base
   end
 
   def add_login_routes(m)
-    home = %Q(map.home '', :controller => 'sessions', :action => 'new')
-    login = %Q(map.login '/login', :controller => 'sessions', :action => 'new')
-    logout =%Q(map.logout '/logout', :controller => 'sessions', :action => 'destroy')
-			
+    if @namespace.blank?
+      home = %Q(\tmap.home '', :controller => 'sessions', :action => 'new')
+      login = %Q(\tmap.login '/login', :controller => 'sessions', :action => 'new')
+      logout =%Q(\tmap.logout '/logout', :controller => 'sessions', :action => 'destroy')
+      routes = [home, login, logout].join("\n\n")
+    else
+      home = %Q(\tmap.home '', :controller => '#{@namespace}/sessions', :action => 'new')
+      login = %Q(\tmap.login '/login', :controller => '#{@namespace}/sessions', :action => 'new')
+      logout =%Q(\tmap.logout '/logout', :controller => '#{@namespace}/sessions', :action => 'destroy')
+      resources = %Q(\tmap.namespace :#{@namespace} do |#{@namespace}|\n\t\t#{@namespace}.resources :sessions\n\t\t#{@namespace}.resources :permissions\n\t\t#{@namespace}.resources :users\n\t\t#{@namespace}.resources :user_groups\n\tend)
+      routes = [home,  login, logout, resources].join("\n\n")
+    end
     sentinel = 'ActionController::Routing::Routes.draw do |map|'
                 
     m.gsub_file 'config/routes.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
-      "#{match}\n  #{home}\n\n  #{login}\n\n  #{logout}\n"
+      "#{match}\n #{routes}\n"
     end
   end
 
@@ -224,6 +241,8 @@ EOS
     opt.separator 'Options:'
     opt.on("--all",
       "Install all Lockdown templates") { |v| options[:all] = v }
+    opt.on("--namespace NAMESPACE",
+      "Install lockdown templates with a namespace") { |v| options[:namespace] = v }
     opt.on("--models",
       "Install only models and migrations (skip migrations by --no_migrations).") { |v| options[:models] = v }
     opt.on("--management",

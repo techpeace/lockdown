@@ -1,4 +1,4 @@
-class PermissionsController < ApplicationController
+class <%= "#{namespace.camelcase}::" unless namespace.blank? %>PermissionsController < ApplicationController
   # GET /permissions
   # GET /permissions.xml
   def index

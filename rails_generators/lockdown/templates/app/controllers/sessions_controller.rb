@@ -1,5 +1,6 @@
-# This controller handles the login/logout function of the site.  
-class SessionsController < ApplicationController
+class <%= "#{namespace.camelcase}::" unless namespace.blank? %>SessionsController < ApplicationController
+
+# This controller handles the login/logout function of the site.
   def new
     #Stub required for Lockdown to grant access
   end
