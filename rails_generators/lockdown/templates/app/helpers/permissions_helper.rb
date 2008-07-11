@@ -1,4 +1,4 @@
-module  <%= "#{namespace.camelcase}::" unless namespace.blank? %>PermissionsHelper
+module <%= "#{namespace.camelcase}::" unless namespace.blank? %>PermissionsHelper
   def permission_name_value
     h @permission.name 
   end

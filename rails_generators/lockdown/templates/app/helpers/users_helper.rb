@@ -1,4 +1,4 @@
-module  <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersHelper
+module <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersHelper
   def user_first_name_value
     if <%= action_name %> == "show"
       h @user.first_name 

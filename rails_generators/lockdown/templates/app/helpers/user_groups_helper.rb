@@ -1,4 +1,4 @@
-module  <%= "#{namespace.camelcase}::" unless namespace.blank? %>UserGroupsHelper
+module <%= "#{namespace.camelcase}::" unless namespace.blank? %>UserGroupsHelper
   def user_group_name_value
     if <%= action_name %> == "show"
        h @user_group.name 
