@@ -84,6 +84,7 @@ class LockdownGenerator < Rails::Generator::Base
 
   def add_login
     @m.directory "app/controllers/sessions"
+    @m.directory "app/views/sessions"
 
     @m.template "app/controllers/sessions_controller.rb",
       "app/controllers/sessions_controller.rb"

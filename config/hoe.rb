@@ -1,19 +1,20 @@
 require 'lockdown/version'
 
 AUTHOR = 'Andrew Stone'  # can also be an array of Authors
-EMAIL = "andrew.n.stone@gmail.com"
+EMAIL = "andy@stonean.com"
 DESCRIPTION = "Authorization/Authentication system for RubyOnRails"
 GEM_NAME = 'lockdown' # what ppl will type to install your gem
 RUBYFORGE_PROJECT = 'lockdown' # The unix name for your project
 HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 DOWNLOAD_PATH = "http://rubyforge.org/projects/#{RUBYFORGE_PROJECT}"
 EXTRA_DEPENDENCIES = [
-  ['rubigen', '>=1.2.4']
+  ['rubigen', '>=1.3.2']
+#  ['activesupport', '>= 1.3.1']
 ]    # An array of rubygem dependencies [name, version]
 
 @config_file = "~/.rubyforge/user-config.yml"
 @config = nil
-RUBYFORGE_USERNAME = 'astone'
+RUBYFORGE_USERNAME = "astone"
 def rubyforge_username
   unless @config
     begin
