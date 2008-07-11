@@ -51,7 +51,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UserGroupsControl
         <% if namespace %>
           format.html { redirect_to(<%= namespace %>_user_group_path(@user_group)) }
         <% else %>
-          format.html { redirect_to(@user_group) }
+          format.html { redirect_to(user_group_path(@user_group)) }
         <% end %>
         format.xml  { render :xml => @user_group, :status => :created, :location => @user_group }
       else
@@ -71,7 +71,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UserGroupsControl
         <% if namespace %>
           format.html { redirect_to(<%= namespace %>_user_group_path(@user_group)) }
         <% else %>
-          format.html { redirect_to(@user_group) }
+          format.html { redirect_to(user_group_path(@user_group)) }
         <% end %>
         format.xml  { head :ok }
       else
@@ -88,7 +88,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UserGroupsControl
     @user_group.destroy
 
     respond_to do |format|
-      format.html { redirect_to(<%= namespace.blank? ? 'user_groups_url' : "#{namespace}_user_groups_url" %>) }
+      format.html { redirect_to(<%= namespace.blank? ? 'user_groups_path' : "#{namespace}_user_groups_path" %>) }
       format.xml  { head :ok }
     end
   end

@@ -1,4 +1,4 @@
-class <%= "#{namespace.camelcase}::" unless namespace.blank? %>SessionsController < ApplicationController
+class SessionsController < ApplicationController
 
 # This controller handles the login/logout function of the site.
   def new
@@ -29,7 +29,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>SessionsControlle
   
   def failed_login(message = 'Authentication failed.')
     flash[:error] = message
-    redirect_back_or_default login_url
+    redirect_back_or_default login_path
   end
 	 
   def successful_login

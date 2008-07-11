@@ -44,7 +44,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersController <
 
 		if @user.save
 			flash[:notice] = "Thanks for signing up!"
-			redirect_to(<%= namespace.blank? ? 'users_url' : "#{namespace}_users_url" %>)
+			redirect_to(<%= namespace.blank? ? 'user_path(@user)' : "#{namespace}_user_path(@user)" %>)
 		else
 			@user_groups_for_user = Lockdown::System.user_groups_assignable_for_user(current_user)
 			flash[:error] = "Please correct the following issues"
@@ -60,7 +60,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersController <
     respond_to do |format|
       if @user.save
         flash[:notice] = 'User was successfully updated.'
-          format.html { redirect_to(<%= namespace.blank?  ? '@user' : "#{namespace}_user_url(@user)"%>) }
+          format.html { redirect_to(<%= namespace.blank?  ? 'user_path(@user)' : "#{namespace}_user_path(@user)"%>) }
         format.xml  { head :ok }
       else
         @user_groups_for_user = Lockdown::System.user_groups_assignable_for_user(current_user)
@@ -76,7 +76,7 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersController <
     @user.destroy
 
     respond_to do |format|
-      format.html { redirect_to(<%= namespace.blank? ? 'users_url' : "#{namespace}_users_url" %>) }
+      format.html { redirect_to(<%= namespace.blank? ? 'users_path' : "#{namespace}_users_path" %>) }
       format.xml  { head :ok }
     end
   end
