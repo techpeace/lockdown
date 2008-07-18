@@ -1,5 +1,6 @@
-== 0.5.14 2008-07-xx
+== 0.5.14 2008-07-18
 * Change: option no_migration to skip-migrations to mimick other generator options
+* Fixed: errant creation of sessions directory in app/controllers
 
 == 0.5.13 2008-07-10
 * Add: Support for --namespace option on generator.  Use as ./script generate lockdown --all --namespace=admin
