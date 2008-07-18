@@ -1,3 +1,6 @@
+== 0.5.14 2008-07-xx
+* Change: option no_migration to skip-migrations to mimick other generator options
+
 == 0.5.13 2008-07-10
 * Add: Support for --namespace option on generator.  Use as ./script generate lockdown --all --namespace=admin
 

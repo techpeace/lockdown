@@ -83,7 +83,6 @@ class LockdownGenerator < Rails::Generator::Base
   end
 
   def add_login
-    @m.directory "app/controllers/sessions"
     @m.directory "app/views/sessions"
 
     @m.template "app/controllers/sessions_controller.rb",
@@ -104,7 +103,7 @@ class LockdownGenerator < Rails::Generator::Base
     write_model("user_group")
     write_model("profile")
 
-    unless options[:no_migrations]
+    unless options[:skip_migrations]
       write_migration("create_profiles")
       write_migration("create_users")
       write_migration("create_user_groups")
@@ -190,13 +189,13 @@ EOS
     opt.on("--namespace namespace",
       "Install lockdown templates with a namespace") { |v| options[:namespace] = v }
     opt.on("--models",
-      "Install only models and migrations (skip migrations by --no_migrations).") { |v| options[:models] = v }
+      "Install only models and migrations (skip migrations by --skip-migrations).") { |v| options[:models] = v }
     opt.on("--management",
       "Install  management functionality.  Which is --all minus --login. All models (migrations) included. ") { |v| options[:management] = v }
     opt.on("--login",
       "Install login functionality.  Which is --all minus --management. All models (migrations) included. ") { |v| options[:login] = v }
-    opt.on("--no_migrations",
-      "Skip migrations installation") { |v| options[:no_migrations] = v }
+    opt.on("--skip-migrations",
+      "Skip migrations installation") { |v| options[:skip_migrations] = v }
   end
 
   def write_migration(str)
