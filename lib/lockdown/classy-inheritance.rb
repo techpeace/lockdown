@@ -26,8 +26,22 @@ module Stonean
       def depends_on(model_sym, options = {}) 
         define_relationship(model_sym,options)
 
-        validates_presence_of model_sym
-        validates_associated model_sym
+        # Optional presence of handling
+        if options.has_key?(:validates_presence_if) && options[:validates_presence_if] != true
+          if [Symbol, String, Proc].include?(options[:validates_presence_if].class)
+            validates_presence_of model_sym, :if => options[:validates_presence_if]
+          end
+        else
+          validates_presence_of model_sym
+        end
+
+        if options.has_key?(:validates_associated_if) && options[:validates_associated_if] != true
+          if [Symbol, String, Proc].include?(options[:validates_assoicated_if].class)
+            validates_associated model_sym, :if => options[:validates_associated_if]
+          end
+        else
+          validates_associated model_sym
+        end
 
         # Before save functionality to create/update the requisite object
         define_save_method(model_sym, options[:as])
@@ -36,7 +50,7 @@ module Stonean
         define_find_with_method(model_sym)
 
         if options[:as]
-          define_can_be_method_on_requisite_class(model_sym, options[:as])
+          define_can_be_method_on_requisite_class(options[:class_name] || model_sym, options[:as])
         end
 
         options[:attrs].each{|attr| define_accessors(model_sym, attr, options)}
@@ -63,9 +77,19 @@ module Stonean
 
       private
 
+      def classy_options
+        [:as, :attrs, :prefix, :postfix, :validates_presence_if, :validates_associated_if]
+      end
+
+      def delete_classy_options(options, *keepers)
+        options.delete_if do |key,value|
+          classy_options.include?(key) && !keepers.include?(key)
+        end
+        options
+      end
+
       def define_relationship(model_sym, options)
-        opts = options.dup
-        [:attrs, :prefix].each{|key| opts.delete(key)}
+        opts = delete_classy_options(options.dup, :as)
         if opts[:as]
           as_opt = opts.delete(:as)
           opts = polymorphic_constraints(as_opt).merge(opts)
@@ -77,12 +101,17 @@ module Stonean
 
       def define_save_method(model_sym, polymorphic_name = nil)
         define_method "save_requisite_#{model_sym}" do
+          # Return unless the association exists
+          eval("return unless self.#{model_sym}")
+
+          # Set the polymorphic type and id before saving
           if polymorphic_name
             eval("self.#{model_sym}.#{polymorphic_name}_type = self.class.name")
             eval("self.#{model_sym}.#{polymorphic_name}_id = self.id")
           end
 
           if polymorphic_name
+            # Save only if it's an update, has_one creates automatically
             eval <<-SAVEIT
               unless self.#{model_sym}.new_record?
                 self.#{model_sym}.save
@@ -116,7 +145,15 @@ module Stonean
       end
 
       def define_accessors(model_sym, attr, options)
-        accessor_method_name = ( options[:prefix] ? "#{model_sym}_#{attr}" : attr)
+        accessor_method_name = attr
+
+        if options[:prefix]
+          accessor_method_name = (options[:prefix] == true) ? "#{model_sym}_#{accessor_method_name}" : "#{options[:prefix]}_#{accessor_method_name}"
+        end
+
+        if options[:postfix]
+          accessor_method_name = (options[:postfix] == true) ? "#{accessor_method_name}_#{model_sym}" : "#{accessor_method_name}_#{options[:postfix]}"
+        end
 
         define_method accessor_method_name do
           eval("self.#{model_sym} ? self.#{model_sym}.#{attr} : nil")

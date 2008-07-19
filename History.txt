@@ -1,3 +1,6 @@
+== 0.5.15 2008-07-18
+* Updated included classy inheritance library.
+
 == 0.5.14 2008-07-18
 * Change: option no_migration to skip-migrations to mimick other generator options
 * Fixed: errant creation of sessions directory in app/controllers
