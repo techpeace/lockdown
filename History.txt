@@ -1,3 +1,5 @@
+== 0.5.18 2008-07-23
+* Changed the generator options to simplify things. The default now is to generate all templates.
 == 0.5.17 2008-07-21
 * Updated included classy inheritance library 0.6.1.
 == 0.5.16 2008-07-18

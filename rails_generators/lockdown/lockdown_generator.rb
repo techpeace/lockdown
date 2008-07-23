@@ -41,14 +41,14 @@ class LockdownGenerator < Rails::Generator::Base
       @m.directory @controller_path
       @m.directory @helper_path
 
-      if options[:all]
-        options[:management] = true
-        options[:login] = true
+      if options[:basics]
+        options[:skip_management] = true
+        options[:skip_login] = true
       end
 
-      add_management if options[:management]
+      add_management unless options[:skip_management]
 
-      add_login if options[:login]
+      add_login unless options[:skip_login]
 
       add_models
     end #record do |m|
@@ -177,6 +177,8 @@ class LockdownGenerator < Rails::Generator::Base
 Installs the lockdown framework to managing users user_groups 
 and viewing permissions. Also includes a login screen.
 
+By default the entire set of stubs are installed.  Please use the appropriate options to customize your install. 
+
 USAGE: #{$0} #{spec.name} 
 EOS
   end
@@ -184,16 +186,14 @@ EOS
   def add_options!(opt)
     opt.separator ''
     opt.separator 'Options:'
-    opt.on("--all",
-      "Install all Lockdown templates") { |v| options[:all] = v }
-    opt.on("--namespace namespace",
-      "Install lockdown templates with a namespace") { |v| options[:namespace] = v }
-    opt.on("--models",
-      "Install only models and migrations (skip migrations by --skip-migrations).") { |v| options[:models] = v }
-    opt.on("--management",
-      "Install  management functionality.  Which is --all minus --login. All models (migrations) included. ") { |v| options[:management] = v }
-    opt.on("--login",
-      "Install login functionality.  Which is --all minus --management. All models (migrations) included. ") { |v| options[:login] = v }
+    opt.on("--namespace=admin",
+      "Install lockdown templates with a namespace, in this example 'admin'.") { |v| options[:namespace] = v }
+    opt.on("--skip-management",
+      "Generate everything but management screens. (controllers, helpers and views for users, permissions and user_groups are not generated). Renders namespace option meaningless.") { |v| options[:skip_management] = v }
+    opt.on("--skip-login",
+      "Generate everything but login (sessions controller and sessions view dir).") { |v| options[:skip_login] = v }
+    opt.on("--basics",
+      "Install only models and migrations.  Equivalent to skip-management and skip-login.") { |v| options[:basics] = v }
     opt.on("--skip-migrations",
       "Skip migrations installation") { |v| options[:skip_migrations] = v }
   end
