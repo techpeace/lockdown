@@ -1,3 +1,5 @@
+== 0.5.19 2008-08-01
+* Modified the lockdown system to account for permissions added/removed from user groups in init.rb.  This will NOT manage user groups defined via the admin screens.
 == 0.5.18 2008-07-23
 * Changed the generator options to simplify things. The default now is to generate all templates.
 == 0.5.17 2008-07-21

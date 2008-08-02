@@ -359,6 +359,32 @@ module Lockdown
                 values(#{p.id}, #{ug.id})
               SQL
             end
+          else
+            # Remove permissions from user group not found in init.rb
+            ug.permissions.each do |perm|
+              perm_sym = lockdown_symbol(perm)
+              perm_string = lockdown_string(perm)
+              unless @user_groups[key].include?(perm_sym)
+                puts ">> Lockdown: Permission: #{perm_string} no longer associated to User Group: #{ug.name}, deleting."
+                ug.permissions.delete(perm)
+              end
+            end
+
+            # Add in permissions from init.rb not found in database
+            @user_groups[key].each do |perm|
+              perm_string = lockdown_string(perm)
+              found = false
+              # see if permission exists
+              ug.permissions.each do |p|
+                found = true if lockdown_string(p) == perm_string 
+              end
+              # if not found, add it
+              unless found
+                puts ">> Lockdown: Permission: #{perm_string} not found for User Group: #{ug.name}, adding it."
+                p = Permission.find(:first, :conditions => ["name = ?", perm_string])
+                ug.permissions << p
+              end
+            end
           end
         end
       rescue Exception => e
