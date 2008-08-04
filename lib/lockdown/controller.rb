@@ -46,6 +46,10 @@ module Lockdown
         def check_session_expiry
           if session[:expiry_time] && session[:expiry_time] < Time.now
             nil_lockdown_values
+            timeout_method = Lockdown::System.fetch(:session_timeout_method)
+            if timeout_method.is_a?(Symbol) && self.respond_to?(timeout_method)
+              send(timeout_method) 
+            end
           end
           session[:expiry_time] = Time.now + Lockdown::System.fetch(:session_timeout)
         end

@@ -11,6 +11,9 @@ Lockdown::System.configure do
   # Set timeout to 1 hour:
   #       options[:session_timeout] = (60 * 60)
   #
+  # Call method when timeout occurs (method must be callable by controller):
+  #       options[:session_timeout_method] = :clear_session_values
+  #
   # Set system to logout if unauthorized access is attempted:
   #       options[:logout_on_access_violation] = false
   #
