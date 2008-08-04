@@ -185,11 +185,11 @@ module Lockdown
 
           # Test for a named routed
           begin
-            hsh = ActionController::Routing::Routes.recognize_path(url)
-            unless hsh.nil?
+            hsh = ActionController::Routing::Routes.recognize_path(path)
+            unless hsh.nil? || hsh[:id]
               return true if path_allowed?(path_from_hash(hsh)) 
             end
-          rescue Exception => e
+          rescue Exception 
             # continue on
           end
 

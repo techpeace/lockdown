@@ -1,4 +1,5 @@
-== 0.5.20 2008-08-xx
+== 0.5.20 2008-08-04
+* Fixed authorized? method to avoid ActionController::Routing::Routes.recognize_path invalid return values
 * Added option[:session_timeout_method]. This method will be called when the session times out.
 
 == 0.5.19 2008-08-01
