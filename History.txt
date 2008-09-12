@@ -1,5 +1,6 @@
 == 0.5.21 2008-09-12
 * Updated lockdown to abide by config.active_record.timestamped_migrations introduced in Rails 2.1.1 
+* Fixed: schlick fixed an issue with the user_groups edit.html.erb.  thanks Michael!
 
 == 0.5.20 2008-08-04
 * Fixed authorized? method to avoid ActionController::Routing::Routes.recognize_path invalid return values
