@@ -1,4 +1,14 @@
-if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 1
+@override_next_migration_string = false
+
+if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 1 
+  if Rails::VERSION::TINY == 0
+    @override_next_migration_string = true
+  elsif ActiveRecord::Base.timestamped_migrations 
+    @override_next_migration_string = true
+  end
+end
+
+if @override_next_migration_string
   class Rails::Generator::Commands::Base
     protected
     def next_migration_string(padding = 3)

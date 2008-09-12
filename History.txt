@@ -1,3 +1,6 @@
+== 0.5.21 2008-09-12
+* Updated lockdown to abide by config.active_record.timestamped_migrations introduced in Rails 2.1.1 
+
 == 0.5.20 2008-08-04
 * Fixed authorized? method to avoid ActionController::Routing::Routes.recognize_path invalid return values
 * Added option[:session_timeout_method]. This method will be called when the session times out.
