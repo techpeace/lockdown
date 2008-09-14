@@ -258,8 +258,10 @@ module Lockdown
           end
         end
 
-        if Lockdown.rails_app?
-          unless ENV['RAILS_ENV'] == 'production'
+        if Lockdown.rails_app? && ENV['RAILS_ENV'] != 'production'
+          if ActiveSupport.const_defined?("Dependencies")
+            ActiveSupport::Dependencies.clear
+          else
             Dependencies.clear
           end
         end
@@ -279,7 +281,11 @@ module Lockdown
 
       def maybe_load_framework_controller_parent
         if Lockdown.rails_app?
-          Dependencies.require_or_load("application.rb")
+          if ActiveSupport.const_defined?("Dependencies")
+            ActiveSupport::Dependencies.require_or_load("application.rb")
+          else
+            Dependencies.require_or_load("application.rb")
+          end
         else
           load("application.rb") unless const_defined?("Application")
         end
@@ -288,7 +294,11 @@ module Lockdown
       def lockdown_load(file)
         klass = lockdown_class_name_from_file(file)
         if Lockdown.rails_app?
-          Dependencies.require_or_load(file)
+          if ActiveSupport.const_defined?("Dependencies")
+            ActiveSupport::Dependencies.require_or_load(file)
+          else
+            Dependencies.require_or_load(file)
+          end
         else
           load(file) unless qualified_const_defined?(klass)
         end
