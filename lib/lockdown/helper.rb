@@ -1,11 +1,21 @@
 module Lockdown
   module Helper
-    #
+    def format_controller_action(url)
+      new_url = url.split("/").delete_if{|p| p.to_i > 0 || p.length == 0}.join("/")
+      new_url += "/index" unless new_url =~ /\//
+      new_url
+    end
+
+    def format_controller(ctr)
+      ctr.split("/").delete_if{|p| p.length == 0}.join("/")
+    end
+
+    def class_name_from_file(str)
+      str.split(".")[0].split("/").collect{|s| camelize(s) }.join("::")
+    end
+
     # If str_sym is a Symbol (:users), give me back "Users"
     # If str_sym is a String ("Users"), give me back :users
-    #
-    # Was :to_title_sym for String and :to_title_str for Symbol
-    #
     def convert_reference_name(str_sym)
       if str_sym.is_a?(Symbol)
         titleize(str_sym)
@@ -14,7 +24,7 @@ module Lockdown
       end
     end
 
-    def lockdown_string(value)
+    def get_string(value)
       if value.respond_to?(:name)
         string_name(value.name)
       else
@@ -22,7 +32,7 @@ module Lockdown
       end
     end
 
-    def lockdown_symbol(value)
+    def get_symbol(value)
       if value.respond_to?(:name)
         symbol_name(value.name)
       elsif value.is_a?(String)
@@ -73,16 +83,5 @@ module Lockdown
         gsub(/([a-z\d])([A-Z])/,'\1_\2').
         tr("-", "_").downcase
     end
-
-    if Lockdown.rails_app?
-      def controller_class_name(str)
-        "#{str}Controller"
-      end
-    else
-      def controller_class_name(str)
-        str
-      end
-    end
   end
-
 end

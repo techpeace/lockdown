@@ -13,11 +13,15 @@ bin/lockdown
 config/hoe.rb
 config/requirements.rb
 lib/lockdown.rb
-lib/lockdown/classy-inheritance.rb
 lib/lockdown/controller.rb
 lib/lockdown/controller_inspector.rb
+lib/lockdown/frameworks/merb.rb
+lib/lockdown/frameworks/rails.rb
 lib/lockdown/helper.rb
-lib/lockdown/model.rb
+lib/lockdown/orms/active_record.rb
+lib/lockdown/orms/data_mapper.rb
+lib/lockdown/rights.rb
+lib/lockdown/session.rb
 lib/lockdown/system.rb
 lib/lockdown/version.rb
 lib/lockdown/view.rb
