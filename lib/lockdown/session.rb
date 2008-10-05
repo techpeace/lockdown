@@ -6,10 +6,6 @@ module Lockdown
       end
     end 
     
-    #
-    # Does the current user have access to at least one permission
-    # in the user group?
-    #
     def current_user_access_in_group?(grp)
       return true if current_user_is_admin?
         Lockdown::System.user_groups[grp].each do |perm|
@@ -24,13 +20,6 @@ module Lockdown
 
     private
 
-    #
-    # session[:access_rights] are the keys to Lockdown.
-    #
-    # session[:access_rights] holds the array of "controller/action" strings 
-    # allowed for the user.
-    #
-    #
     def add_lockdown_session_values(user)
       session[:access_rights] = Lockdown::System.access_rights_for_user(user)
     end

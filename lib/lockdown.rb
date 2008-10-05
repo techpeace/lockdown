@@ -1,6 +1,3 @@
-$:.unshift(File.dirname(__FILE__)) unless
-  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-
 require File.join(File.dirname(__FILE__), "lockdown", "helper")
 
 module Lockdown
@@ -25,10 +22,8 @@ module Lockdown
         mod = File.basename(f).split(".")[0]
         mklass = eval("Lockdown::#{str.capitalize}::#{Lockdown.camelize(mod)}")
         if mklass.use_me?
-          mklass.mixin
+          include mklass
           return true
-        else
-          puts "!! Not using #{mklass.inspect}"
         end
       end
       false
@@ -38,6 +33,7 @@ end # Lockdown
 
 
 require File.join(File.dirname(__FILE__), "lockdown", "system")
+require File.join(File.dirname(__FILE__), "lockdown", "controller")
 require File.join(File.dirname(__FILE__), "lockdown", "session")
 
 Lockdown.mixin

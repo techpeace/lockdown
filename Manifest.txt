@@ -14,9 +14,13 @@ config/hoe.rb
 config/requirements.rb
 lib/lockdown.rb
 lib/lockdown/controller.rb
-lib/lockdown/controller_inspector.rb
+lib/lockdown/database.rb
 lib/lockdown/frameworks/merb.rb
+lib/lockdown/frameworks/merb/controller.rb
+lib/lockdown/frameworks/merb/view.rb
 lib/lockdown/frameworks/rails.rb
+lib/lockdown/frameworks/rails/controller.rb
+lib/lockdown/frameworks/rails/view.rb
 lib/lockdown/helper.rb
 lib/lockdown/orms/active_record.rb
 lib/lockdown/orms/data_mapper.rb
@@ -24,7 +28,6 @@ lib/lockdown/rights.rb
 lib/lockdown/session.rb
 lib/lockdown/system.rb
 lib/lockdown/version.rb
-lib/lockdown/view.rb
 rails_generators/lockdown/USAGE
 rails_generators/lockdown/lockdown_generator.rb
 rails_generators/lockdown/templates/app/controllers/permissions_controller.rb

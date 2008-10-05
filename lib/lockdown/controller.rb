@@ -1,10 +1,7 @@
 module Lockdown
-  module Controller#:nodoc:
-    #
-    # Core Controller locking methods
-    #
+  module Controller
     module Core
-      def configure_lock_down
+      def configure_lockdown
         check_session_expiry
         store_location
       end

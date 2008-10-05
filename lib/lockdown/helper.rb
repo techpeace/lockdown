@@ -14,8 +14,8 @@ module Lockdown
       str.split(".")[0].split("/").collect{|s| camelize(s) }.join("::")
     end
 
-    # If str_sym is a Symbol (:users), give me back "Users"
-    # If str_sym is a String ("Users"), give me back :users
+    # If str_sym is a Symbol (:users), return "Users"
+    # If str_sym is a String ("Users"), return :users
     def convert_reference_name(str_sym)
       if str_sym.is_a?(Symbol)
         titleize(str_sym)
@@ -52,11 +52,29 @@ module Lockdown
     end
 
     def administrator_group_string
-      string_name(:administrators)
+      string_name(administrator_group_symbol)
     end
 
     def administrator_group_symbol
       :administrators
+    end
+
+    def qualified_const_defined?(klass)
+      if klass =~ /::/
+        namespace, klass = klass.split("::")
+        eval("#{namespace}.const_defined?(#{klass})") if const_defined?(namespace)
+      else
+        const_defined?(klass)
+      end
+    end
+
+    def qualified_const_get(klass)
+      if klass =~ /::/
+        namespace, klass = klass.split("::")
+        eval(namespace).const_get(klass)
+      else
+        const_get(klass)
+      end
     end
     
     private
