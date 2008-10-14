@@ -23,9 +23,6 @@ module Lockdown
 
           module InstanceMethods
             def self.included(base)
-              base.class_eval do
-                alias :send_to  :redirect
-              end
               base.send :include, Lockdown::Controller::Core
             end
 
@@ -42,7 +39,7 @@ module Lockdown
             # Can log Error => e if desired, I don't desire to now.
             # For now, just send home, but will probably make this configurable
             def access_denied(e)
-              send_to Lockdown::System.fetch(:access_denied_path)
+              redirect Lockdown::System.fetch(:access_denied_path)
             end
           
             def path_from_hash(hsh)
@@ -51,6 +48,9 @@ module Lockdown
               hsh['controller'].to_s + "/" + hsh['action'].to_s
             end
           
+            def redirect_back_or_default(default)
+              session[:prevpage] ? redirect(session[:prevpage]) : redirect(default)
+            end
           end # InstanceMethods
         end # Lock
       end # Controller

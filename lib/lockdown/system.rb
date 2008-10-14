@@ -65,12 +65,7 @@ module Lockdown
       def set_defaults
         load_controller_classes
 
-        @permissions = {}
-        @user_groups = {}
-        
-        @public_access = []
-        @protected_access = []
-        @private_access = []
+        initialize_rights
 
         @options = {
           :session_timeout => (60 * 60),

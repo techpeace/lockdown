@@ -16,25 +16,21 @@ module Lockdown
           def self.included(base)
             base.send :include, Lockdown::Frameworks::Rails::Controller::Lock::InstanceMethods
 
-            base.before_filter do |controller|
-              controller.set_current_user
-              controller.configure_lockdown
-              controller.check_request_authorization
+            base.before_filter do |c|
+              c.set_current_user
+              c.configure_lockdown
+              c.check_request_authorization
             end
 
             base.send :helper_method, :authorized?
 
             base.filter_parameter_logging :password, :password_confirmation
       
-            base.rescue_from SecurityError,
-              :with => proc{|e| access_denied(e)}
+            base.rescue_from SecurityError, :with => proc{|e| access_denied(e)}
           end
 
           module InstanceMethods
             def self.included(base)
-              base.class_eval do
-                alias :send_to  :redirect_to
-              end
               base.send :include, Lockdown::Controller::Core
             end
 
@@ -44,13 +40,10 @@ module Lockdown
         
             def authorized?(url)
               return false unless url
-
               return true if current_user_is_admin?
 
               url.strip!
-
               url_parts = URI::split(url)
-            
               path = url_parts[5]
             
               # See if path is known
@@ -74,27 +67,29 @@ module Lockdown
 
               # Passing in different domain
               return true if remote_url?(url_parts[2])
-
               false
             end
       
             def access_denied(e)
+
+              RAILS_DEFAULT_LOGGER.info "Access denied: #{e}"
+
               if Lockdown::System.fetch(:logout_on_access_violation)
                 reset_session
               end
-
-              respond_to do |accepts|
-                accepts.html do
+              respond_to do |format|
+                format.html do
                   store_location
-                  send_to Lockdown::System.fetch(:access_denied_path)
+                  redirect_to Lockdown::System.fetch(:access_denied_path)
+                  return
                 end
-                accepts.xml do
+                format.xml do
                   headers["Status"] = "Unauthorized"
                   headers["WWW-Authenticate"] = %(Basic realm="Web Password")
                   render :text => e.message, :status => "401 Unauthorized"
+                  return
                 end
               end
-              false
             end
 
             def path_from_hash(hsh)
@@ -105,6 +100,11 @@ module Lockdown
               return false if domain.nil? || domain.strip.length == 0
               request.host.downcase != domain.downcase
             end
+
+            def redirect_back_or_default(default)
+              session[:prevpage] ? redirect_to(session[:prevpage]) : redirect_to(default)
+            end
+
           end # InstanceMethods
         end # Lock
       end # Controller

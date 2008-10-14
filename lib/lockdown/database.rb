@@ -7,8 +7,8 @@ module Lockdown
       # We'll see how it works...
       def sync_with_db
 
-        @permissions = Lockdown::System.permissions.keys
-        @user_groups = Lockdown::System.user_groups.keys
+        @permissions = Lockdown::System.get_permissions
+        @user_groups = Lockdown::System.get_user_groups
 
         create_new_permissions
 
@@ -54,30 +54,10 @@ module Lockdown
             create_user_group(str)
           else
             # Remove permissions from user group not found in init.rb
-            ug.permissions.each do |perm|
-              perm_sym = Lockdown.get_symbol(perm)
-              perm_string = Lockdown.get_string(perm)
-              unless @user_groups[key].include?(perm_sym)
-                puts ">> Lockdown: Permission: #{perm_string} no longer associated to User Group: #{ug.name}, deleting."
-                ug.permissions.delete(perm)
-              end
-            end
+            remove_invalid_permissions(ug, key)
 
             # Add in permissions from init.rb not found in database
-            @user_groups[key].each do |perm|
-              perm_string = Lockdown.get_string(perm)
-              found = false
-              # see if permission exists
-              ug.permissions.each do |p|
-                found = true if Lockdown.get_string(p) == perm_string 
-              end
-              # if not found, add it
-              unless found
-                puts ">> Lockdown: Permission: #{perm_string} not found for User Group: #{ug.name}, adding it."
-                p = Permission.find(:first, :conditions => ["name = ?", perm_string])
-                ug.permissions << p
-              end
-            end
+            add_valid_permissions(ug, key)
           end
         end
       end
@@ -94,6 +74,35 @@ module Lockdown
           SQL
         end
       end
+
+      def remove_invalid_permissions(ug, key)
+        ug.permissions.each do |perm|
+          perm_sym = Lockdown.get_symbol(perm)
+          perm_string = Lockdown.get_string(perm)
+          unless @user_groups[key].include?(perm_sym)
+            puts ">> Lockdown: Permission: #{perm_string} no longer associated to User Group: #{ug.name}, deleting."
+            ug.permissions.delete(perm)
+          end
+        end
+      end
+
+      def add_valid_permissions(ug, key)
+        @user_groups[key].each do |perm|
+          perm_string = Lockdown.get_string(perm)
+          found = false
+          # see if permission exists
+          ug.permissions.each do |p|
+            found = true if Lockdown.get_string(p) == perm_string 
+          end
+          # if not found, add it
+          unless found
+            puts ">> Lockdown: Permission: #{perm_string} not found for User Group: #{ug.name}, adding it."
+            p = Permission.find(:first, :conditions => ["name = ?", perm_string])
+            ug.permissions << p
+          end
+        end
+      end
+
     end # class block
   end # Database
 end #Lockdown

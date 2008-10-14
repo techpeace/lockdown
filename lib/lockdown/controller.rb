@@ -20,12 +20,6 @@ module Lockdown
         end
       end
       
-      def redirect_back_or_default(default)
-        session[:prevpage] ? send_to(session[:prevpage]) : send_to(default)
-      end
-
-      private
-        
       def path_allowed?(url)
         req = Lockdown.format_controller_action(url)
         session[:access_rights] ||= Lockdown::System.public_access
