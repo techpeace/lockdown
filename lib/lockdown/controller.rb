@@ -21,10 +21,9 @@ module Lockdown
       end
       
       def path_allowed?(url)
-        req = Lockdown.format_controller_action(url)
         session[:access_rights] ||= Lockdown::System.public_access
         session[:access_rights].each do |ar|
-          return true if req == ar
+          return true if url == ar
         end
         false
       end

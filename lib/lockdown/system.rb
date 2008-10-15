@@ -71,7 +71,8 @@ module Lockdown
           :session_timeout => (60 * 60),
           :logout_on_access_violation => false,
           :access_denied_path => "/",
-          :successful_login_path => "/"
+          :successful_login_path => "/",
+          :subdirectory => nil
         }
       end
 
@@ -84,7 +85,17 @@ module Lockdown
           methods = available_actions(klass) 
         end
         path_str = str_sym.gsub("__","\/") 
-        returning = methods.flatten.collect{|meth| "#{path_str}/#{meth.to_s}" }
+        
+        subdir = Lockdown::System.fetch(:subdirectory)
+        path_str = "#{subdir}/#{path_str}" if subdir
+
+        controller_actions = methods.flatten
+        returning = controller_actions.collect{|meth| "#{path_str}/#{meth.to_s}" }
+
+        if controller_actions.include?("index")
+          returning += [path_str]
+        end
+
         returning
       end
 

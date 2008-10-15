@@ -23,6 +23,11 @@ Lockdown::System.configure do
   # Set redirect to path on successful login:
   #       options[:successful_login_path] = "/"
   #
+  # If deploying to a subdirectory, set that here. Defaults to nil
+  #       options[:subdirectory] = "blog"
+  #       *Notice: Do not add leading or trailing slashes,
+  #                Lockdown will handle this
+  #
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Define permissions
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

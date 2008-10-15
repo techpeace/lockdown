@@ -42,18 +42,14 @@ module Lockdown
               return false unless url
               return true if current_user_is_admin?
 
-              url.strip!
-              url_parts = URI::split(url)
-              path = url_parts[5]
-            
-              # See if path is known
-              return true if path_allowed?(path)
+              url_parts = URI::split(url.strip)
+              # remove id from path, e.g.: /users/1/edit to  users/edit
+              path = url_parts[5].split("/").collect do |p|
+                p unless p =~ /\A\d+\z/ || p.strip.length == 0
+              end.compact.join("/")
 
-              # Test to see if url contains id 
-              parts = path.split("/").collect{|p| p unless p =~ /\A\d+\z/}.compact
-              new_path = parts.join("/")
-              
-              return true if path_allowed?(new_path)
+              ## See if path is known
+              return true if path_allowed?(path)
 
               # Test for a named routed
               begin

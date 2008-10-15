@@ -1,15 +1,5 @@
 module Lockdown
   module Helper
-    def format_controller_action(url)
-      new_url = url.split("/").delete_if{|p| p.to_i > 0 || p.length == 0}.join("/")
-      new_url += "/index" unless new_url =~ /\//
-      new_url
-    end
-
-    def format_controller(ctr)
-      ctr.split("/").delete_if{|p| p.length == 0}.join("/")
-    end
-
     def class_name_from_file(str)
       str.split(".")[0].split("/").collect{|s| camelize(s) }.join("::")
     end
