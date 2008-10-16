@@ -6,10 +6,17 @@ module Lockdown
           Object.const_defined?("DataMapper") && DataMapper.const_defined?("Base")
         end
 
+        def included(mod)
+          mod.extend Lockdown::Orms::Datamapper::Helper
+          mixin
+        end
+
         def mixin
           orm_parent.send :include, Lockdown::Orm::DataMapper::Stamps
         end
+      end # class block
 
+      module Helper
         def orm_parent
           ::DataMapper::Base
         end
@@ -27,7 +34,7 @@ module Lockdown
         def database_table_exists?(klass)
           DataMapper.database.table_exists?(klass)
         end
-      end # class block
+      end
 
       module Stamps
         def self.included(base)

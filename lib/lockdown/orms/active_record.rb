@@ -6,10 +6,17 @@ module Lockdown
           Object.const_defined?("ActiveRecord") && ::ActiveRecord.const_defined?("Base")
         end
 
-        def mixin
-          orm_parent.send :include, Lockdown::Orms::ActiveRecord::Stamps
+        def included(mod)
+          mod.extend Lockdown::Orms::ActiveRecord::Helper
+          mixin
         end
 
+        def mixin
+          Lockdown.orm_parent.send :include, Lockdown::Orms::ActiveRecord::Stamps
+        end
+      end # class block
+
+      module Helper
         def orm_parent
           ::ActiveRecord::Base
         end
@@ -25,7 +32,7 @@ module Lockdown
         def database_table_exists?(klass)
           klass.table_exists?
         end
-      end # class block
+      end
 
       module Stamps
         def self.included(base)

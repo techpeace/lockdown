@@ -14,7 +14,9 @@ module Lockdown
 
         instance_eval(&block)
 
-        Lockdown::Database.sync_with_db
+        unless Lockdown::System.fetch(:skip_db_sync_in).include?(ENV['RAILS_ENV']) 
+          Lockdown::Database.sync_with_db
+        end
       end
 
       # Return option value for key
@@ -72,7 +74,8 @@ module Lockdown
           :logout_on_access_violation => false,
           :access_denied_path => "/",
           :successful_login_path => "/",
-          :subdirectory => nil
+          :subdirectory => nil,
+          :skip_db_sync_in => ["test"]
         }
       end
 
