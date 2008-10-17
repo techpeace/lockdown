@@ -137,7 +137,9 @@ module Lockdown
       return [] if usr.nil?
         
       if administrator?(usr)
-        UserGroup.find(:all, :order => :name)
+        UserGroup.find_by_sql <<-SQL
+          select user_groups.* from user_groups order by user_groups.name
+        SQL
       else
         UserGroup.find_by_sql <<-SQL
             select user_groups.* from user_groups, user_groups_users
