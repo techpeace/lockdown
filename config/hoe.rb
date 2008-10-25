@@ -9,7 +9,7 @@ HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 DOWNLOAD_PATH = "http://rubyforge.org/projects/#{RUBYFORGE_PROJECT}"
 EXTRA_DEPENDENCIES = [
   ['rubigen', '>=1.3.2'],
-  ['classy-inheritance', '>=0.6.1']
+  ['classy-inheritance', '>=0.6.2']
 #  ['activesupport', '>= 1.3.1']
 ]    # An array of rubygem dependencies [name, version]
 

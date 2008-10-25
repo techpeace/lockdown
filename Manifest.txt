@@ -13,6 +13,7 @@ bin/lockdown
 config/hoe.rb
 config/requirements.rb
 lib/lockdown.rb
+lib/lockdown/classy-inheritance.rb
 lib/lockdown/controller.rb
 lib/lockdown/database.rb
 lib/lockdown/frameworks/merb.rb
