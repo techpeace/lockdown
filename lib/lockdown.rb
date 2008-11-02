@@ -1,3 +1,4 @@
+require File.join(File.dirname(__FILE__), "lockdown", "classy-inheritance")
 require File.join(File.dirname(__FILE__), "lockdown", "helper")
 
 module Lockdown
