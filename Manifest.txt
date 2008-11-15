@@ -2,7 +2,6 @@ History.txt
 License.txt
 Manifest.txt
 PostInstall.txt
-README
 README.txt
 Rakefile
 app_generators/lockdown/USAGE
@@ -10,8 +9,6 @@ app_generators/lockdown/lockdown_generator.rb
 app_generators/lockdown/templates/init.rb
 app_generators/lockdown/templates/session.rb
 bin/lockdown
-config/hoe.rb
-config/requirements.rb
 lib/lockdown.rb
 lib/lockdown/classy-inheritance.rb
 lib/lockdown/controller.rb
@@ -68,9 +65,6 @@ script/destroy
 script/generate
 script/txt2html
 setup.rb
-tasks/deployment.rake
-tasks/environment.rake
-tasks/website.rake
 test/test_generator_helper.rb
 test/test_helper.rb
 test/test_lockdown.rb
