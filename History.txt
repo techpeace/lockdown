@@ -1,3 +1,9 @@
+== 0.6.1 2008-11-21
+* Fixed: Named routes were not being honored in link_to 
+
+== 0.6.0 2008-11-15
+* Big refactor of internals
+
 == 0.5.22 2008-09-14
 * Update: Add test for future deprecation: Dependencies to be ActiveSupport::Dependencies 
 

@@ -53,7 +53,7 @@ module Lockdown
 
               # Test for a named routed
               begin
-                hsh = ActionController::Routing::Routes.recognize_path(path)
+                hsh = ActionController::Routing::Routes.recognize_path(url_parts[5])
                 unless hsh.nil? || hsh[:id]
                   return true if path_allowed?(path_from_hash(hsh)) 
                 end
