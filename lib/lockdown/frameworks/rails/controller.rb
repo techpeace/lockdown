@@ -4,7 +4,11 @@ module Lockdown
       module Controller
         
         def available_actions(klass)
-          klass.public_instance_methods - klass.hidden_actions
+          if klass.respond_to?(:action_methods)
+            klass.action_methods
+          else
+            klass.public_instance_methods - klass.hidden_actions
+          end
         end
 
         def controller_name(klass)

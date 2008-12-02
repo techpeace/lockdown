@@ -1,3 +1,6 @@
+== 0.6.2 2008-12-01
+* Fixed: Made call to action_methods instead of calculating controller actions
+
 == 0.6.1 2008-11-21
 * Fixed: Named routes were not being honored in link_to 
 
