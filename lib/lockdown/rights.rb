@@ -1,7 +1,7 @@
 module Lockdown
   module Rights
-    attr_reader :permissions #:nodoc:
-    attr_reader :user_groups #:nodoc:
+    attr_accessor :permissions #:nodoc:
+    attr_accessor :user_groups #:nodoc:
 
     # :public_access allows access to all
     attr_reader :public_access #:nodoc:

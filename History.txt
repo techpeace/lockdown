@@ -1,3 +1,6 @@
+== 0.6.3 2008-12-02
+* Fixed: Database sync was failing.  Cause of refactor. Apologies
+
 == 0.6.2 2008-12-01
 * Fixed: Made call to action_methods instead of calculating controller actions
 
