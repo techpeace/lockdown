@@ -4,7 +4,7 @@ lockdown
 
 == DESCRIPTION:
 
-Lockdown is a authentication/authorization system for RubyOnRails (ver 2.x).
+Lockdown is a authentication/authorization system for RubyOnRails (ver >= 2.1).
 
 == INSTALL:
 
@@ -14,7 +14,7 @@ sudo gem install lockdown
 
 (The MIT License)
 
-Copyright (c) 2008 Andrew Stone
+Copyright (c) 2009 Andrew Stone
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
