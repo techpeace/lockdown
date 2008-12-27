@@ -2,7 +2,6 @@ require File.join(File.dirname(__FILE__), "lockdown", "classy-inheritance")
 require File.join(File.dirname(__FILE__), "lockdown", "helper")
 
 module Lockdown
-
   # :stopdoc:
   VERSION = '0.7.0'
   LIBPATH = ::File.expand_path(::File.dirname(__FILE__)) + ::File::SEPARATOR
@@ -33,13 +32,14 @@ module Lockdown
     private
 
     def mixin_resource?(str)
-      wildcard_path = File.join( File.dirname(__FILE__), %w['lockdown', str, '*.rb'] ) 
+      wildcard_path = File.join( File.dirname(__FILE__), 'lockdown', str , '*.rb' ) 
       Dir[wildcard_path].each do |f|
         require f
         module_name = File.basename(f).split(".")[0]
         module_class = eval("Lockdown::#{str.capitalize}::#{Lockdown.camelize(module_name)}")
         if module_class.use_me?
           include module_class
+          puts "==============================> using: #{module_class}"
           return true
         end
       end
