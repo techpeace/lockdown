@@ -47,6 +47,10 @@ module Lockdown
       module System
         include Lockdown::Frameworks::Merb::Controller
 
+        def skip_sync?
+          Lockdown::System.fetch(:skip_db_sync_in).include?(Merb.environment)
+        end
+
         def load_controller_classes
           @controller_classes = {}
          

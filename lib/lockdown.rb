@@ -25,7 +25,7 @@ module Lockdown
           raise NotImplementedError, "ORM unknown to Lockdown!"
         end
       else
-        puts "Environment unknown to Lockdown! Assuming I was required for a rake task or similar utility."
+        puts "Note:: Environment unknown to Lockdown! Assuming I was required for a rake task or similar utility\n"
       end
     end # mixin
 
@@ -39,7 +39,6 @@ module Lockdown
         module_class = eval("Lockdown::#{str.capitalize}::#{Lockdown.camelize(module_name)}")
         if module_class.use_me?
           include module_class
-          puts "==============================> using: #{module_class}"
           return true
         end
       end
@@ -53,4 +52,5 @@ require File.join(File.dirname(__FILE__), "lockdown", "system")
 require File.join(File.dirname(__FILE__), "lockdown", "controller")
 require File.join(File.dirname(__FILE__), "lockdown", "session")
 
+puts "Using Lockdown version: #{Lockdown.version}\n"
 Lockdown.mixin

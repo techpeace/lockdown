@@ -48,6 +48,10 @@ module Lockdown
       module System
         include Lockdown::Frameworks::Rails::Controller
 
+        def skip_sync?
+          Lockdown::System.fetch(:skip_db_sync_in).include?(ENV['RAILS_ENV'])
+        end
+
         def load_controller_classes
           @controller_classes = {}
          

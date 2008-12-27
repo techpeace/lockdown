@@ -14,9 +14,8 @@ module Lockdown
 
         instance_eval(&block)
 
-        unless Lockdown::System.fetch(:skip_db_sync_in).include?(ENV['RAILS_ENV']) 
-          Lockdown::Database.sync_with_db
-        end
+        Lockdown::Database.sync_with_db unless skip_sync?
+
       end
 
       # Return option value for key
