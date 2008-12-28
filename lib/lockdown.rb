@@ -17,6 +17,12 @@ module Lockdown
       VERSION
     end
  
+    # Returns the qualified path to the init file
+    #
+    def init_file
+     "#{Dir.pwd}/lib/lockdown/init.rb"
+    end
+
     # Mixin Lockdown code to the appropriate Controller and ORM
     #
     def mixin
@@ -24,11 +30,15 @@ module Lockdown
         unless mixin_resource?("orms")
           raise NotImplementedError, "ORM unknown to Lockdown!"
         end
+
+        puts "=> Requiring Lockdown rules engine: #{Lockdown.init_file} \n"
+        require Lockdown.init_file
       else
-        puts "Note:: Environment unknown to Lockdown! Assuming I was required for a rake task or similar utility\n"
+        puts "=> Note:: Environment unknown to Lockdown! Assuming I was required for a rake task or similar utility\n"
       end
     end # mixin
 
+    # :stopdoc:
     private
 
     def mixin_resource?(str)
@@ -52,5 +62,6 @@ require File.join(File.dirname(__FILE__), "lockdown", "system")
 require File.join(File.dirname(__FILE__), "lockdown", "controller")
 require File.join(File.dirname(__FILE__), "lockdown", "session")
 
-puts "Using Lockdown version: #{Lockdown.version}\n"
+puts "=> Mixing in Lockdown version: #{Lockdown.version} \n"
 Lockdown.mixin
+

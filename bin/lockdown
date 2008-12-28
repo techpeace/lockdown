@@ -1,13 +1,8 @@
 #!/usr/bin/env ruby
 
-require "rubygems"
-require "rubigen"
-require "rubigen/scripts/generate"
-require 'optparse'
-
 if %w(-v --version).include? ARGV.first
   require 'lockdown/version'
-  puts "#{File.basename($0)} #{Lockdown::VERSION::STRING}"
+  puts "#{File.basename($0)} #{Lockdown.version}"
   exit(0)
 end
 
@@ -41,35 +36,6 @@ def config_file
     RAILS_CONFIG
   end
 end
-
-begin
-  require 'rubygems'
-rescue LoadError
-  # no rubygems to load, so we fail silently
-end
-
-
-OPTIONS = {
-  :path     => File.expand_path('.')
-}
-
-parser = OptionParser.new do |opts|
-  opts.banner = <<-BANNER
-    Lockdown will add init.rb and session.rb to the lib/lockdown directory and require them in #{config_file}.
-
-    Usage: #{File.basename($0)} [options]
-
-    Options are:
-    BANNER
-
-  opts.separator ""
-  opts.on("-p", "--path=PATH", String,
-    "The root path for selecting files",
-    "Default: [current directory]") { |OPTIONS[:path]| }
-  opts.on("-h", "--help",
-    "Show this help message.") { puts opts; exit }
-  opts.parse!(ARGV)
-end 
 
 #
 # Load up the config file contents
@@ -117,6 +83,10 @@ MSG
 
 puts <<-MSG
 \n------------------------------------------------------------
+Please add the following to config/environment.rb:
+
+  config.gem "lockdown", :version => ">= #{Lockdown.version}"
+
 You are now locked down.  To open up access to your 
 application please modify lib/lockdown/init.rb.  This is 
 where you'll add permissions and create user groups.
