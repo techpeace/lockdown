@@ -269,6 +269,7 @@ EOS
   def add_config_gem
     config_gem =  %Q(config.gem "lockdown", :version => ">= 0.7.0")
     
+    #TODO: Instead of returning here, I need to update the config.gem statment
     return if initializer_file_has?(config_gem)
 
     sentinel = nil
@@ -286,7 +287,7 @@ EOS
 
         NOTE:
         ======================================================================
-        No config.gem statments found in environment.rb, not sure what to do.
+        No config.gem statements found in environment.rb, not sure what to do.
         Please add the following to config/environment.rb: 
 
           #{config_gem} 
