@@ -133,8 +133,6 @@ class LockdownGenerator < Rails::Generator::Base
   end
 
   def copy_views(vw)
-    @m.template "app/views/#{vw}/_data.html.erb", "#{@view_path}/#{vw}/_data.html.erb"
-    @m.template "app/views/#{vw}/_form.html.erb", "#{@view_path}/#{vw}/_form.html.erb"
     @m.template "app/views/#{vw}/index.html.erb", "#{@view_path}/#{vw}/index.html.erb"
     @m.template "app/views/#{vw}/show.html.erb", "#{@view_path}/#{vw}/show.html.erb"
     @m.template "app/views/#{vw}/edit.html.erb", "#{@view_path}/#{vw}/edit.html.erb"
