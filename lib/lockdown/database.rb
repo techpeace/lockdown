@@ -17,7 +17,6 @@ module Lockdown
         maintain_user_groups
       rescue Exception => e
         puts ">> Lockdown sync failed: #{e}" 
-        puts ">> #{e.backtrace.join("\n")}"
       end
 
       private
