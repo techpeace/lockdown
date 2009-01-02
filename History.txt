@@ -1,3 +1,7 @@
+== 0.7.0 2009-01-xx
+* Removed lockdown as an executable.  Will always go through the generator used by the framework.
+* Removed references to classy inheritance.  Directly coded some of classy inheritance's functionality into User model.
+
 == 0.6.3 2008-12-02
 * Fixed: Database sync was failing.  Cause of refactor. Apologies
 
