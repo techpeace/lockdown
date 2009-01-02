@@ -1,0 +1,6 @@
+<h1>Editing Usergroup</h1>
+
+<%%= render :partial => "form" %>
+
+<%%= link_to 'Show', <%= namespace.blank? ? '@user_group' : "#{namespace}_user_group_path(@user_group)" %> %> |
+<%%= link_to 'Back', <%= namespace.blank? ? 'user_groups_path' : "#{namespace}_user_groups_path" %> %>
