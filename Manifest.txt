@@ -21,6 +21,7 @@ lib/lockdown/session.rb
 lib/lockdown/system.rb
 lib/lockdown/version.rb
 rails_generators/lockdown/.DS_Store
+rails_generators/lockdown/.lockdown_generator.rb.swp
 rails_generators/lockdown/lockdown_generator.rb
 rails_generators/lockdown/templates/.DS_Store
 rails_generators/lockdown/templates/app/controllers/permissions_controller.rb
@@ -34,12 +35,9 @@ rails_generators/lockdown/templates/app/models/permission.rb
 rails_generators/lockdown/templates/app/models/profile.rb
 rails_generators/lockdown/templates/app/models/user.rb
 rails_generators/lockdown/templates/app/models/user_group.rb
-rails_generators/lockdown/templates/app/views/permissions/_data.html.erb
 rails_generators/lockdown/templates/app/views/permissions/index.html.erb
 rails_generators/lockdown/templates/app/views/permissions/show.html.erb
 rails_generators/lockdown/templates/app/views/sessions/new.html.erb
-rails_generators/lockdown/templates/app/views/user_groups/_data.html.erb
-rails_generators/lockdown/templates/app/views/user_groups/_form.html.erb
 rails_generators/lockdown/templates/app/views/user_groups/edit.html.erb
 rails_generators/lockdown/templates/app/views/user_groups/index.html.erb
 rails_generators/lockdown/templates/app/views/user_groups/new.html.erb
