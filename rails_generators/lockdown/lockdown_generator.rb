@@ -37,6 +37,8 @@ class LockdownGenerator < Rails::Generator::Base
     @helper_path = "app/helpers"
     @lib_path = "lib/lockdown"
 
+    @initializer = "config/environment.rb"
+
     if @namespace
       @view_path += "/#{@namespace}"
       @controller_path += "/#{@namespace}"
@@ -67,6 +69,8 @@ class LockdownGenerator < Rails::Generator::Base
       add_login unless options[:skip_login]
 
       add_models
+      
+      add_config_gem
     end #record do |m|
   end
 
@@ -249,6 +253,46 @@ EOS
   def write_init_file(sentinel, str)
     @m.gsub_file 'lib/lockdown/init.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
       "#{match}\n  #{str}"
+    end
+  end
+  
+  def initializer_file
+    File.open @initializer do |f|
+      f.map {|line| line.chomp}
+    end
+  end
+  
+  def initializer_file_has?(req)
+    initializer_file.include?(req)
+  end
+  
+  def add_config_gem
+    config_gem =  %Q(config.gem "lockdown", :version => ">= 0.7.0")
+    
+    return if initializer_file_has?(config_gem)
+
+    sentinel = nil
+    
+    File.open(@initializer, "r").each do |line|
+      sentinel = line if line =~ /config.gem/
+    end
+    
+    if sentinel
+      @m.gsub_file @initializer, /(#{Regexp.escape(sentinel)})/mi do |match|
+        "#{match}\n  #{config_gem}\n"
+      end    
+    else
+      puts <<-NOTICE
+
+        NOTE:
+        ======================================================================
+        No config.gem statments found in environment.rb, not sure what to do.
+        Please add the following to config/environment.rb: 
+
+          #{config_gem} 
+          
+        ======================================================================
+      NOTICE
     end
   end
 end

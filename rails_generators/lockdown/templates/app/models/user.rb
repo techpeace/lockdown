@@ -47,27 +47,31 @@ class User < ActiveRecord::Base
 
   # Profile information
   def first_name
-    profile.first_name
+    user_profile.first_name
   end
   
   def first_name=(string)
-    profile.first_name = string
+    user_profile.first_name = string
   end
   
   def last_name
-    profile.last_name
+    user_profile.last_name
   end
   
   def last_name=(string)
-    profile.last_name = string
+    user_profile.last_name = string
   end
   
   def email
-    profile.email
+    user_profile.email
   end
   
   def email=(string)
-    profile.email = string
+    user_profile.email = string
+  end
+
+  def user_profile
+    self.profile || self.profile = Profile.new
   end
   
   protected
