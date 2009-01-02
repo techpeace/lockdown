@@ -4,27 +4,27 @@
   <%%= f.error_messages %>
   <p>
     <b>First name</b><br />
-    <%%= text_field :user, :first_name %>
+    <%%= f.text_field :first_name %>
   </p>
   <p>
     <b>Last name</b><br />
-    <%%= text_field :user, :last_name %>
+    <%%= f.text_field :last_name %>
   </p>
   <p>
     <b>Email</b><br />
-    <%%= text_field :user, :email %>
+    <%%= f.text_field :email %>
   </p>
   <p>
-  	<b><span>L</span>ogin</b><br />
-    <%%= text_field :user, :login %>
+  	<b>Login</b><br />
+    <%%= f.text_field :login %>
   </p>
   <p>
-    <b><span>P</span>assword</b><br />
-    <%%= password_field :user, :password %>
+    <b>Password</b><br />
+    <%%= f.password_field :password %>
   </p>
   <p>
-    <b><span>P</span>assword confirmation</b><br />
-    <%%= password_field :user, :password_confirmation %>
+    <b>Password confirmation</b><br />
+    <%%= f.password_field :password_confirmation %>
   </p>
   <p>
     <b>User Groups</b><br />
@@ -32,10 +32,11 @@
       <%% 
         @user_groups_for_user.each_with_index do |ug,i|
           input_id = "ug_#{ug.id}"
+          checked = (@user.user_group_ids.include?(ug.id) ? "checked" : "")                    
       %>
           <li id="li_<%%= input_id %>">
             <label for="<%%= input_id %>">
-            <input id="<%%= input_id %>" name="<%%= input_id %>" type="checkbox"/>&nbsp;&nbsp;<%%= ug.name %>
+            <input id="<%%= input_id %>" name="<%%= input_id %>" type="checkbox" <%= checked %>/>&nbsp;&nbsp;<%%= ug.name %>
             </label>
           </li>
       <%% 
