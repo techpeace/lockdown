@@ -89,9 +89,6 @@ class LockdownGenerator < Rails::Generator::Base
 
     copy_views("user_groups")
 
-    @m.template "app/views/permissions/_data.html.erb",
-      "#{@view_path}/permissions/_data.html.erb"
-
     @m.template "app/views/permissions/index.html.erb",
       "#{@view_path}/permissions/index.html.erb"
 
