@@ -101,13 +101,12 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersController <
 
 	def update_user_groups
 		new_ug_ids = params.collect{|p| p[0].split("_")[1].to_i if p[0] =~ /^ug_/}.compact
-		#
 		# Removed previously associated user_groups if not checked this time.
 		#
 		@user.user_groups.dup.each do |g|
 			@user.user_groups.delete(g) unless new_ug_ids.include?(g.id)
     end
-		# 
+	
 		# Add in the new permissions
 		#
 		new_ug_ids.each do |id|
