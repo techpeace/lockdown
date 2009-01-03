@@ -30,10 +30,14 @@ module Lockdown
           raise NotImplementedError, "ORM unknown to Lockdown!"
         end
 
-        puts "=> Requiring Lockdown rules engine: #{Lockdown.init_file} \n"
-        require Lockdown.init_file
+        if File.exists?(Lockdown.init_file)
+          puts "=> Requiring Lockdown rules engine: #{Lockdown.init_file} \n"
+          require Lockdown.init_file
+        else
+          puts "=> Note:: Lockdown couldn't find init file: #{Lockdown.init_file}\n"
+        end
       else
-        puts "=> Note:: Environment unknown to Lockdown! Assuming I was required for a rake task or similar utility\n"
+        puts "=> Note:: Lockdown cannot determine framework and therefore is not active.\n"
       end
     end # mixin
 

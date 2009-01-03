@@ -105,8 +105,6 @@ class <%= "#{namespace.camelcase}::" unless namespace.blank? %>UsersController <
 		# Removed previously associated user_groups if not checked this time.
 		#
 		@user.user_groups.dup.each do |g|
-			#Don't remove the automatically assigned user groups
-			next if Lockdown::System.has_user_group?(g)
 			@user.user_groups.delete(g) unless new_ug_ids.include?(g.id)
     end
 		# 

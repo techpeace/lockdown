@@ -3,7 +3,7 @@
 if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 1 
   if Rails::VERSION::TINY == 0
     @override_next_migration_string = true
-  elsif ActiveRecord::Base.timestamped_migrations 
+  elsif ActiveRecord::Base.timestamped_migrations
     @override_next_migration_string = true
   end
 end
@@ -264,11 +264,12 @@ EOS
   def add_config_gem
     config_gem =  %Q(config.gem "lockdown", :version => ">= 0.7.0")
     
-    #TODO: Instead of returning here, I need to update the config.gem statment
+    #TODO: Instead of returning here, I need to update the config.gem statement
     return if initializer_file_has?(config_gem)
 
     sentinel = nil
     
+    #Grab the last config.gem statement to use a the sentinel
     File.open(@initializer, "r").each do |line|
       sentinel = line if line =~ /config.gem/
     end
