@@ -22,10 +22,7 @@ module Lockdown
       
       def path_allowed?(url)
         session[:access_rights] ||= Lockdown::System.public_access
-        session[:access_rights].each do |ar|
-          return true if url == ar
-        end
-        false
+        session[:access_rights].include?(url)
       end
         
       def check_session_expiry
