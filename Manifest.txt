@@ -19,6 +19,7 @@ lib/lockdown/orms/data_mapper.rb
 lib/lockdown/rights.rb
 lib/lockdown/session.rb
 lib/lockdown/system.rb
+rails_generators/lockdown/.lockdown_generator.rb.swp
 rails_generators/lockdown/lockdown_generator.rb
 rails_generators/lockdown/templates/app/controllers/permissions_controller.rb
 rails_generators/lockdown/templates/app/controllers/sessions_controller.rb
@@ -42,6 +43,7 @@ rails_generators/lockdown/templates/app/views/users/edit.html.erb
 rails_generators/lockdown/templates/app/views/users/index.html.erb
 rails_generators/lockdown/templates/app/views/users/new.html.erb
 rails_generators/lockdown/templates/app/views/users/show.html.erb
+rails_generators/lockdown/templates/config/initializers/lockit.rb
 rails_generators/lockdown/templates/db/migrate/create_admin_user.rb
 rails_generators/lockdown/templates/db/migrate/create_permissions.rb
 rails_generators/lockdown/templates/db/migrate/create_profiles.rb

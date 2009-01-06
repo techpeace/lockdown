@@ -70,7 +70,7 @@ class LockdownGenerator < Rails::Generator::Base
 
       add_models
       
-      add_config_gem
+      @m.file "config/initializers/lockit.rb", "config/initializers/lockit.rb"
     end #record do |m|
   end
 
@@ -251,45 +251,4 @@ EOS
     end
   end
   
-  def initializer_file
-    File.open @initializer do |f|
-      f.map {|line| line.chomp}
-    end
-  end
-  
-  def initializer_file_has?(req)
-    initializer_file.include?(req)
-  end
-  
-  def add_config_gem
-    config_gem =  %Q(config.gem "lockdown", :version => ">= 0.7.0")
-    
-    #TODO: Instead of returning here, I need to update the config.gem statement
-    return if initializer_file_has?(config_gem)
-
-    sentinel = nil
-    
-    #Grab the last config.gem statement to use a the sentinel
-    File.open(@initializer, "r").each do |line|
-      sentinel = line if line =~ /config.gem/
-    end
-    
-    if sentinel
-      @m.gsub_file @initializer, /(#{Regexp.escape(sentinel)})/mi do |match|
-        "#{match}\n  #{config_gem}\n"
-      end    
-    else
-      puts <<-NOTICE
-
-        NOTE:
-        ======================================================================
-        No config.gem statements found in environment.rb, not sure what to do.
-        Please add the following to config/environment.rb: 
-
-          #{config_gem} 
-          
-        ======================================================================
-      NOTICE
-    end
-  end
 end
