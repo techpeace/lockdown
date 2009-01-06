@@ -3,11 +3,13 @@ module Lockdown
     module Rails
       module View
         def self.included(base)
-          base.send :alias_method, :link_to_open,  :link_to
-          base.send :alias_method, :link_to,  :link_to_secured
+          base.class_eval do
+            alias_method :link_to_open, :link_to
+            alias_method :link_to, :link_to_secured
 
-          base.send :alias_method, :button_to_open,  :button_to
-          base.send :alias_method, :button_to,  :button_to_secured
+            alias_method :button_to_open, :button_to
+            alias_method :button_to, :button_to_secured
+          end
         end
     
         def link_to_secured(name, options = {}, html_options = nil)

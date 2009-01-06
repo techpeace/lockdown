@@ -15,9 +15,15 @@ module Lockdown
         end
 
         def mixin
-          Lockdown.controller_parent.send :include, Lockdown::Frameworks::Rails::Controller::Lock
-          Lockdown.view_helper.send :include, Lockdown::Frameworks::Rails::View
-          Lockdown::System.send :extend, Lockdown::Frameworks::Rails::System
+          Lockdown.controller_parent.class_eval do
+            include Lockdown::Frameworks::Rails::Controller::Lock
+          end
+          Lockdown.view_helper.class_eval do
+            include Lockdown::Frameworks::Rails::View
+          end
+          Lockdown::System.class_eval do 
+            extend Lockdown::Frameworks::Rails::System
+          end
         end
       end # class block
 

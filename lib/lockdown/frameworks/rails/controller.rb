@@ -18,7 +18,11 @@ module Lockdown
         # Locking methods
         module Lock
           def self.included(base)
-            base.send :include, Lockdown::Frameworks::Rails::Controller::Lock::InstanceMethods
+            base.class_eval do
+              include Lockdown::Frameworks::Rails::Controller::Lock::InstanceMethods
+
+              helper_method :authorized?
+            end
 
             base.before_filter do |c|
               c.set_current_user
@@ -26,7 +30,6 @@ module Lockdown
               c.check_request_authorization
             end
 
-            base.send :helper_method, :authorized?
 
             base.filter_parameter_logging :password, :password_confirmation
       
@@ -35,7 +38,9 @@ module Lockdown
 
           module InstanceMethods
             def self.included(base)
-              base.send :include, Lockdown::Controller::Core
+              base.class_eval do
+                include Lockdown::Controller::Core
+              end
             end
 
             def sent_from_uri
