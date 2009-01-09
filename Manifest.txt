@@ -19,7 +19,6 @@ lib/lockdown/orms/data_mapper.rb
 lib/lockdown/rights.rb
 lib/lockdown/session.rb
 lib/lockdown/system.rb
-rails_generators/lockdown/.lockdown_generator.rb.swp
 rails_generators/lockdown/lockdown_generator.rb
 rails_generators/lockdown/templates/app/controllers/permissions_controller.rb
 rails_generators/lockdown/templates/app/controllers/sessions_controller.rb
