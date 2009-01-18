@@ -11,19 +11,16 @@ module Lockdown
     include Lockdown::Helper
 
     # Returns the version string for the library.
-    #
     def version
       VERSION
     end
  
     # Returns the qualified path to the init file
-    #
     def init_file
      "#{Dir.pwd}/lib/lockdown/init.rb"
     end
 
-    # Mixin Lockdown code to the appropriate Controller and ORM
-    #
+    # Mixin Lockdown code to the appropriate framework and ORM
     def mixin
       if mixin_resource?("frameworks")
         unless mixin_resource?("orms")
