@@ -3,3 +3,4 @@
 pkg/**
 doc/**
 email.txt
+coverage/**

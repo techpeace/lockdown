@@ -12,7 +12,20 @@ end
 ensure_in_path 'lib'
 require 'lockdown'
 
-task :default => 'spec:run'
+task :default => 'rcov'
+
+desc "Flog your code for Justice!"
+task :flog do
+    sh('flog lib/**/*.rb')
+end
+
+desc "Run all specs and rcov in a non-sucky way"
+Spec::Rake::SpecTask.new(:rcov) do |t|
+  t.spec_opts = IO.readlines("spec/spec.opts").map {|l| l.chomp.split " "}.flatten
+  t.spec_files = FileList['spec/**/*_spec.rb']
+  t.rcov = true
+  t.rcov_opts = IO.readlines("spec/rcov.opts").map {|l| l.chomp.split " "}.flatten
+end
 
 PROJ.name = 'lockdown'
 PROJ.authors = 'Andrew Stone'
