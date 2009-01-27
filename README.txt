@@ -8,7 +8,7 @@ Lockdown is a authentication/authorization system for RubyOnRails (ver >= 2.1).
 
 == INSTALL:
 
-sudo gem install lockdown 
+  sudo gem install lockdown 
 
 == LICENSE:
 
