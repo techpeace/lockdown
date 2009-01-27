@@ -11,26 +11,30 @@ module Lockdown
     end
   end
 
-  class RootContect < Context
-    def initialize
+  class RootContext < Context
+    def initialize(name)
+      @name = name
       @allowed_methods = %w(with_controller and_controller to_model)
     end
   end
 
   class ControllerContext < Context
-    def initialize
+    def initialize(name)
+      @name = name
       @allowed_methods = %w(only_methods except_methods)
     end
   end
 
   class ModelContext < Context
-    def initialize
+    def initialize(name)
+      @name = name
       @allowed_methods = %w(where)
     end
   end
 
   class ModelWhereContext < Context
-    def initialize
+    def initialize(name)
+      @name = name
       @allowed_methods = %w(is_in includes equals)
     end
   end

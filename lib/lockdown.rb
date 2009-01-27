@@ -62,10 +62,12 @@ module Lockdown
 end # Lockdown
 
 
-require File.join("lockdown", "system")
+require File.join("lockdown", "context")
+require File.join("lockdown", "permission")
 require File.join("lockdown", "database")
 require File.join("lockdown", "session")
 require File.join("lockdown", "core_controller")
+require File.join("lockdown", "system")
 
 puts "=> Mixing in Lockdown version: #{Lockdown.version} \n"
 

@@ -1,6 +1,5 @@
 module Lockdown
   module Rights
-
     def configure(&block)
       set_defaults
 

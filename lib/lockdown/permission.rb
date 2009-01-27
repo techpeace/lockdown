@@ -3,6 +3,10 @@ module Lockdown
 
   class Controller
     attr_accessor :name, :methods
+
+    def initialize(name)
+      @name = name
+    end
   end
 
   class Model
@@ -70,7 +74,7 @@ module Lockdown
       @name         = name_symbol
       @controllers  = {}
       @models       = {}
-      @current_context = RootContext.new(name_symbol)
+      @current_context = Lockdown::RootContext.new(name_symbol)
     end
 
     def with_controller(name_symbol)
@@ -86,66 +90,70 @@ module Lockdown
     def only_methods(*methods)
       validate_context
       current_controller.methods = methods
-      @current_context = RootContext.new(@name)
+      @current_context = Lockdown::RootContext.new(@name)
       self
     end
 
     def except_methods(*methods)
       validate_context
       current_controller.methods.reject!{|method| methods.include?(method)}
-      @current_context = RootContext.new(@name)
+      @current_context = Lockdown::RootContext.new(@name)
       self
     end
 
     def to_model(symbol)
-      @models(symbol) = Model.new(symbol)
-      @current_context = ModelContext.new(name_symbol)
+      @models[symbol] = Model.new(symbol)
+      @current_context = Lockdown::ModelContext.new(name_symbol)
       self
     end
 
     def where(controller_method)
       validate_context
-      @current_context = ModelWhereContext.new(@current_context.name)
+      @current_context = Lockdown::ModelWhereContext.new(current_context.name)
       self
     end
 
     def equals(model_method)
       validate_context
       associate_model_method(model_method, :equals)
-      @current_context = RootContext.new(@name)
+      @current_context = Lockdown::RootContext.new(@name)
       self
     end
 
     def is_in(model_method)
       validate_context
       associate_model_method(model_method, :includes)
-      @current_context = RootContext.new(@name)
+      @current_context = Lockdown::RootContext.new(@name)
       self
     end
 
     alias_method :includes, :is_in
 
+    def current_context
+      @current_context
+    end
+
     private
 
     def current_controller
-      @controllers[@current_context.name]
+      @controllers[current_context.name]
     end
 
     def current_model
-      @models[@current_context.name]
+      @models[current_context.name]
     end
 
     def associate_model_method(model_method, association)
       current_model.model_method = model_method
       current_model.association = association
-      @current_context = RootContext.new(@name)
+      @current_context = Lockdown::RootContext.new(@name)
     end
 
     def validate_context
       method_trace = caller.first;  
       calling_method = caller.first[/#{__FILE__}:(\d+):in `(.*)'/,2]
-      unless @current_context.allows?(calling_method)
-        raise InvalidRuleContext, "Method: #{calling_method} was called on wrong context #{@current_context}. Allowed methods are: #{@current_context.allowed_methods.join(',')}."
+      unless current_context.allows?(calling_method)
+        raise InvalidRuleContext, "Method: #{calling_method} was called on wrong context #{current_context}. Allowed methods are: #{current_context.allowed_methods.join(',')}."
       end
     end
   end
