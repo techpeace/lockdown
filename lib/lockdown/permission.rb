@@ -78,6 +78,8 @@ module Lockdown
     end
 
     def with_controller(name_symbol)
+      validate_context
+
       controller = Controller.new(name_symbol)
       controller.methods = paths_for(name_symbol)
       @controllers[name_symbol] = controller
@@ -89,6 +91,7 @@ module Lockdown
 
     def only_methods(*methods)
       validate_context
+
       current_controller.methods = methods
       @current_context = Lockdown::RootContext.new(@name)
       self
@@ -96,25 +99,30 @@ module Lockdown
 
     def except_methods(*methods)
       validate_context
+
       current_controller.methods.reject!{|method| methods.include?(method)}
       @current_context = Lockdown::RootContext.new(@name)
       self
     end
 
-    def to_model(symbol)
-      @models[symbol] = Model.new(symbol)
+    def to_model(name_symbol)
+      validate_context
+
+      @models[name_symbol] = Model.new(name_symbol)
       @current_context = Lockdown::ModelContext.new(name_symbol)
       self
     end
 
     def where(controller_method)
       validate_context
+
       @current_context = Lockdown::ModelWhereContext.new(current_context.name)
       self
     end
 
     def equals(model_method)
       validate_context
+
       associate_model_method(model_method, :equals)
       @current_context = Lockdown::RootContext.new(@name)
       self
@@ -122,6 +130,7 @@ module Lockdown
 
     def is_in(model_method)
       validate_context
+
       associate_model_method(model_method, :includes)
       @current_context = Lockdown::RootContext.new(@name)
       self
@@ -133,8 +142,6 @@ module Lockdown
       @current_context
     end
 
-    private
-
     def current_controller
       @controllers[current_context.name]
     end
@@ -142,6 +149,8 @@ module Lockdown
     def current_model
       @models[current_context.name]
     end
+
+    private
 
     def associate_model_method(model_method, association)
       current_model.model_method = model_method

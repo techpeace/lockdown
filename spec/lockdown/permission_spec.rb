@@ -9,9 +9,21 @@ describe Lockdown::Permission do
   end
 
   describe "#with_controller" do
-    it "should set current_context to ControllerContext" do
+    before do
       @permission.with_controller(:users)
+    end
+
+    it "should set current_context to ControllerContext" do
       @permission.current_context.name.should equal(:users)
+    end
+
+    it "should raise InvalidRuleContext trying to access methods out of context" do
+      methods = [:where, :equals, :is_in, :includes]
+
+      methods.each do |method|
+        lambda{@permission.send(method, :sample_param)}.
+          should raise_error(Lockdown::InvalidRuleContext)
+      end
     end
   end
 
@@ -22,14 +34,62 @@ describe Lockdown::Permission do
   end
 
   describe "#to_model" do
+    before do
+      @permission.to_model(:user)
+    end
+
+    it "should raise InvalidRuleContext trying to access methods out of context" do
+      methods = [:with_controller, :and_controller, :equals, :is_in, :includes]
+
+      methods.each do |method|
+        lambda{@permission.send(method, :sample_param)}.
+          should raise_error(Lockdown::InvalidRuleContext)
+      end
+    end
   end
 
   describe "#where" do
+    before do
+      @permission.to_model(:user).where(:current_user_id)
+    end
+
+    it "should raise InvalidRuleContext trying to access methods out of context" do
+      methods = [:with_controller, :and_controller, :to_model]
+
+      methods.each do |method|
+        lambda{@permission.send(method, :sample_param)}.
+          should raise_error(Lockdown::InvalidRuleContext)
+      end
+    end
   end
 
   describe "#equals" do
+    before do
+      @permission.to_model(:user).where(:current_user_id).equals(:id)
+    end
+
+    it "should raise InvalidRuleContext trying to access methods out of context" do
+      methods = [:where, :equals, :is_in, :includes]
+
+      methods.each do |method|
+        lambda{@permission.send(method, :sample_param)}.
+          should raise_error(Lockdown::InvalidRuleContext)
+      end
+    end
   end
 
   describe "#is_in" do
+    before do
+      @permission.to_model(:user).where(:current_user_id).is_in(:manager_ids)
+    end
+
+    it "should raise InvalidRuleContext trying to access methods out of context" do
+      methods = [:where, :equals, :is_in, :includes]
+
+      methods.each do |method|
+        lambda{@permission.send(method, :sample_param)}.
+          should raise_error(Lockdown::InvalidRuleContext)
+      end
+    end
   end
 end
