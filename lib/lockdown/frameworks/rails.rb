@@ -33,6 +33,10 @@ module Lockdown
           RAILS_ROOT
         end
 
+        def init_file
+          "#{project_root}/lib/lockdown/init.rb"
+        end
+
         def controller_parent
           ActionController::Base
         end

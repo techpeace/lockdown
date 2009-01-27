@@ -39,7 +39,7 @@ module Lockdown
           module InstanceMethods
             def self.included(base)
               base.class_eval do
-                include Lockdown::Controller::Core
+                include Lockdown::CoreController
               end
             end
 

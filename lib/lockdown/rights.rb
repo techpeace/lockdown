@@ -1,21 +1,32 @@
 module Lockdown
   module Rights
-    attr_accessor :permissions #:nodoc:
-    attr_accessor :user_groups #:nodoc:
 
-    # :public_access allows access to all
-    attr_reader :public_access #:nodoc:
-    # :protected_access will restrict access to authenticated users.
-    attr_reader :protected_access #:nodoc:
+    def configure(&block)
+      set_defaults
 
-    # Future functionality:
-    # :private_access will restrict access to model data to their creators.
-    # attr_accessor :private_access 
+      instance_eval(&block)
 
-    # Sets permission with arrays of access_rights, e.g.:
-    # ["controller_a/method_1", "controller_a/method_2", ...]
+      Lockdown::Database.sync_with_db unless skip_sync?
+    end
+ 
+    def set_defaults
+      # Controller of framework defines this method.  For rails,
+      # you can find this defined in lib/lockdown/frameworks/rails.rb
+      load_controller_classes
 
-    def initialize_rights
+      initialize_rights
+
+      @options = {
+        :session_timeout => (60 * 60),
+        :logout_on_access_violation => false,
+        :access_denied_path => "/",
+        :successful_login_path => "/",
+        :subdirectory => nil,
+        :skip_db_sync_in => ["test"]
+      }
+    end
+
+   def initialize_rights
       @permissions ||= {}
       @user_groups ||= {}
 
@@ -190,6 +201,39 @@ module Lockdown
       return perm_array unless block_given?
     end
 
+    # *syms is a splat of controller symbols,
+    # e.g all_methods(:users, :authors, :books)
+    def all_methods(*syms)
+      syms.collect{ |sym| paths_for(sym) }.flatten
+    end
+
+    # controller name (sym) and a splat of methods to 
+    # exclude from result
+    #
+    # All user methods except destroy:
+    # e.g all_except_methods(:users, :destroy)
+    def all_except_methods(sym, *methods)
+      paths_for(sym) - paths_for(sym, *methods) 
+    end
+  
+    # controller name (sym) and a splat of methods to 
+    # to build the result
+    # 
+    # Only user methods index (list), show (good for readonly access):
+    # e.g only_methods(:users, :index, :show)
+    def only_methods(sym, *methods)
+      paths_for(sym, *methods)
+    end
+
+    # all controllers, all actions
+    #
+    # This is admin access
+    def all_controllers_all_methods
+      controllers = controller_classes
+      controllers.collect do |str, klass|
+        paths_for( controller_name(klass), available_actions(klass) )
+      end.flatten!
+    end
 
     private
 
