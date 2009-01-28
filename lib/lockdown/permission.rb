@@ -83,7 +83,7 @@ module Lockdown
       controller = Controller.new(name_symbol)
       controller.methods = paths_for(name_symbol)
       @controllers[name_symbol] = controller
-      @current_context = ControllerContext.new(name_symbol)
+      @current_context = Lockdown::ControllerContext.new(name_symbol)
       self
     end
 
@@ -92,7 +92,7 @@ module Lockdown
     def only_methods(*methods)
       validate_context
 
-      current_controller.methods = methods
+      current_controller.methods = paths_for(current_controller.name, *methods)
       @current_context = Lockdown::RootContext.new(@name)
       self
     end
@@ -100,7 +100,7 @@ module Lockdown
     def except_methods(*methods)
       validate_context
 
-      current_controller.methods.reject!{|method| methods.include?(method)}
+      current_controller.methods = current_controller.methods - paths_for(current_controller.name, *methods)
       @current_context = Lockdown::RootContext.new(@name)
       self
     end

@@ -21,7 +21,7 @@ module Lockdown
   class ControllerContext < Context
     def initialize(name)
       @name = name
-      @allowed_methods = %w(only_methods except_methods)
+      @allowed_methods = %w(with_controller and_controller to_model only_methods except_methods)
     end
   end
 
