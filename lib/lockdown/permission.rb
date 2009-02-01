@@ -1,5 +1,6 @@
 module Lockdown
   class InvalidRuleContext < StandardError; end
+  class PermissionScopeCollision < StandardError; end
 
   class Controller
     attr_accessor :name, :methods
@@ -22,6 +23,9 @@ module Lockdown
   end
   
   class Permission
+    attr_reader :name, :controllers, :models
+    attr_reader :public_access, :protected_access
+
     # A Permission is a set of rules that are, through UserGroups, assigned
     # to users to allow access to system resources.
     #
@@ -138,6 +142,20 @@ module Lockdown
 
     alias_method :includes, :is_in
 
+    def set_as_public_access
+      if protected_access
+        raise PermissionScopeCollision, "Permission: #{name} already marked as protected and trying to set as public."
+      end
+      @public_access = true
+    end
+
+    def set_as_protected_access
+      if public_access
+        raise PermissionScopeCollision, "Permission: #{name} already marked as public and trying to set as protected."
+      end
+      @protected_access = true
+    end
+
     def current_context
       @current_context
     end
@@ -148,6 +166,10 @@ module Lockdown
 
     def current_model
       @models[current_context.name]
+    end
+
+    def ==(other)
+      name == other.name
     end
 
     private
