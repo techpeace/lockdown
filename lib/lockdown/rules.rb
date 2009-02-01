@@ -1,5 +1,36 @@
 module Lockdown
+  class InvalidRuleAssignment < StandardError; end
+
   module Rules
+    attr_accessor :options
+    attr_accessor :permissions
+    attr_accessor :user_groups
+    attr_accessor :controller_classes
+
+    attr_reader :protected_access 
+    attr_reader :public_access
+ 
+    def set_defaults
+      @permissions  = {}
+      @user_groups  = {}
+      @options      = {}
+
+      @permission_objects = {}
+
+      @controller_classes = []
+      @public_access      = []
+      @protected_access   = []
+
+      @options = {
+        :session_timeout => (60 * 60),
+        :logout_on_access_violation => false,
+        :access_denied_path => "/",
+        :successful_login_path => "/",
+        :subdirectory => nil,
+        :skip_db_sync_in => ["test"]
+      }
+    end
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # =Rule defining methods.  e.g. Methods used in lib/lockdown/init.rb
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -16,7 +47,14 @@ module Lockdown
     #   set_public_access(:permission_one, :permission_two)
     #
     def set_public_access(*perms)
-      perms.each{|perm| @public_access += permissions[perm]}
+      perms.each do |perm_symbol|
+        perm = @permission_objects.find{|name, pobj| pobj.name == perm_symbol}
+        if perm
+          perm.set_as_public_access 
+        else
+          raise InvalidRuleAssigment, "Permission not found: #{perm_symbol}"
+        end
+      end
     end
 
     # Defines protected access by the permission symbols
@@ -25,7 +63,14 @@ module Lockdown
     #   set_public_access(:permission_one, :permission_two)
     #
     def set_protected_access(*perms)
-      perms.each{|perm| @protected_access += permissions[perm]}
+      perms.each do |perm_symbol|
+        perm = @permission_objects.find{|name, pobj| pobj.name == perm_symbol}
+        if perm
+          perm.set_as_protected_access 
+        else
+          raise InvalidRuleAssigment, "Permission not found: #{perm_symbol}"
+        end
+      end
     end
 
     def set_user_group(name, *perms)
@@ -188,11 +233,12 @@ module Lockdown
       perm_array 
     end
 
-    private
-
     def parse_permissions
-      @permission_objects.each do |perm|
-        # figure out how to apply the settings in each permission object
+      @permission_objects.each do |name, perm|
+        @permissions[perm.name] ||= []
+        perm.controllers.collect do |controller|
+          @permissions[perm.name] << controller.methods
+        end
       end
     end
 

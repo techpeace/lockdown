@@ -2,16 +2,6 @@ module Lockdown
   class System
     extend Lockdown::Rules
 
-    class << self
-      attr_accessor :options
-      attr_accessor :permissions
-      attr_accessor :user_groups
-      attr_accessor :controller_classes
-
-      attr_reader :protected_access 
-      attr_reader :public_access
-    end
-
     def self.configure(&block)
       set_defaults 
 
@@ -25,26 +15,6 @@ module Lockdown
       parse_permissions
 
       Lockdown::Database.sync_with_db unless skip_sync?
-    end
-
-    def self.set_defaults
-      @permissions  = {}
-      @user_groups  = {}
-      @options      = {}
-
-      @permission_objects = []
-      @controller_classes = []
-      @public_access      = []
-      @protected_access   = []
-
-      @options = {
-        :session_timeout => (60 * 60),
-        :logout_on_access_violation => false,
-        :access_denied_path => "/",
-        :successful_login_path => "/",
-        :subdirectory => nil,
-        :skip_db_sync_in => ["test"]
-      }
     end
 
     def self.fetch(key)
