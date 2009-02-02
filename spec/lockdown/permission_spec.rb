@@ -77,6 +77,23 @@ describe Lockdown::Permission do
     end
   end
 
+  describe "#set_as_public_access" do
+    it "should raise an PermissionScopeCollision if already protected" do
+      @permission.set_as_protected_access
+      lambda{@permission.set_as_public_access}.
+        should raise_error(Lockdown::PermissionScopeCollision)
+    end
+  end
+
+
+  describe "#set_as_protected_access" do
+    it "should raise an PermissionScopeCollision if already public" do
+      @permission.set_as_public_access
+      lambda{@permission.set_as_protected_access}.
+        should raise_error(Lockdown::PermissionScopeCollision)
+    end
+  end
+
   describe "while in RootContext" do
     before do
       @permission.with_controller(:users).only_methods(:show, :edit)

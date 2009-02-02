@@ -11,8 +11,8 @@ module Lockdown
       # Lockdown::Rules defines the methods that are used inside block
       instance_eval(&block)
 
-      # Lockdown::Rules defines parse_permissions
-      parse_permissions
+      # Lockdown::Rules defines process_rules
+      process_rules
 
       Lockdown::Database.sync_with_db unless skip_sync?
     end

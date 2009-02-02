@@ -9,6 +9,8 @@ module Lockdown
 
     attr_reader :protected_access 
     attr_reader :public_access
+
+    attr_reader :permission_objects
  
     def set_defaults
       @permissions  = {}
@@ -48,11 +50,12 @@ module Lockdown
     #
     def set_public_access(*perms)
       perms.each do |perm_symbol|
-        perm = @permission_objects.find{|name, pobj| pobj.name == perm_symbol}
+        perm = permission_objects.find{|name, pobj| pobj.name == perm_symbol}
         if perm
-          perm.set_as_public_access 
+          perm[1].set_as_public_access 
         else
-          raise InvalidRuleAssigment, "Permission not found: #{perm_symbol}"
+          msg = "Permission not found: #{perm_symbol}"
+          raise InvalidRuleAssigment, msg
         end
       end
     end
@@ -64,21 +67,19 @@ module Lockdown
     #
     def set_protected_access(*perms)
       perms.each do |perm_symbol|
-        perm = @permission_objects.find{|name, pobj| pobj.name == perm_symbol}
+        perm = permission_objects.find{|name, pobj| pobj.name == perm_symbol}
         if perm
-          perm.set_as_protected_access 
+          perm[1].set_as_protected_access 
         else
-          raise InvalidRuleAssigment, "Permission not found: #{perm_symbol}"
+          msg = "Permission not found: #{perm_symbol}"
+          raise InvalidRuleAssigment, msg
         end
       end
     end
 
     def set_user_group(name, *perms)
       user_groups[name] ||= []
-      perms.each do |perm| 
-        unless permission_exists?(perm)
-          raise SecurityError, "For UserGroup (#{name}), permission is invalid: #{perm}"
-        end
+      perms.each do |perm|
         user_groups[name].push(perm)
       end
     end
@@ -220,7 +221,8 @@ module Lockdown
         perm_sym = Lockdown.get_symbol(perm)
 
         unless permission_exists?(perm_sym)
-          raise SecurityError, "Permission associated to User Group is invalid: #{perm}"
+          msg = "Permission associated to User Group is invalid: #{perm}"
+          raise SecurityError, msg
         end
 
         if block_given?
@@ -233,8 +235,15 @@ module Lockdown
       perm_array 
     end
 
+    def process_rules
+      parse_permissions
+      validate_user_groups
+    end
+
+    private
+
     def parse_permissions
-      @permission_objects.each do |name, perm|
+      permission_objects.each do |name, perm|
         @permissions[perm.name] ||= []
         perm.controllers.collect do |controller|
           @permissions[perm.name] << controller.methods
@@ -242,5 +251,15 @@ module Lockdown
       end
     end
 
+    def validate_user_groups
+      user_groups.each do |user_group, perms|
+        perms.each do |perm|
+          unless permission_exists?(perm)
+            msg ="User Group: #{user_group}, permission not found: #{perm}"
+            raise InvalidRuleAssignment, msg
+          end
+        end
+      end
+    end
   end
 end
