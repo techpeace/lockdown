@@ -29,6 +29,12 @@ describe Lockdown::Rules do
       perm = @rules.permission_objects.find{|name, object| name == :home_page}
       perm[1].public_access.should be_true
     end
+
+    it "should raise and InvalidRuleAssignment if permission does not exist" do
+      msg = "Permission not found: user_management"
+      lambda{@rules.set_public_access(:user_management)}.should
+        raise_error(Lockdown::InvalidRuleAssignment, msg)
+    end
   end
 
   describe "#set_protected_access" do
@@ -37,6 +43,12 @@ describe Lockdown::Rules do
       @rules.set_protected_access(:user_management)
       perm = @rules.permission_objects.find{|name, object| name == :user_management}
       perm[1].protected_access.should be_true
+    end
+
+    it "should raise and InvalidRuleAssignment if permission does not exist" do
+      msg = "Permission not found: user_management"
+      lambda{@rules.set_protected_access(:user_management)}.should
+        raise_error(Lockdown::InvalidRuleAssignment, msg)
     end
   end
 
@@ -69,8 +81,21 @@ describe Lockdown::Rules do
       @rules.get_user_groups.should == [:security_management]
     end
   end
-  describe "#user_group_exists?"
 
+  describe "#user_group_exists?" do
+    it "should return true if user_group exists" do
+      @rules.set_user_group(:user_management, :some_perm)
+      @rules.user_group_exists?(:user_management).should be_true
+    end
+
+    it "should return false if user_group does not exist" do
+      @rules.user_group_exists?(:user_management).should be_false
+    end
+  end
+
+
+  describe "#make_user_administrator" do
+  end
 
   describe "#process_rules" do
     it "should validate user_group permissions" do
