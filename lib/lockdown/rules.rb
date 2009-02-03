@@ -77,6 +77,11 @@ module Lockdown
       end
     end
 
+    # Define a user groups by name and permission symbol(s)
+    #
+    # ==== Example
+    #   set_user_group(:managment_group, :permission_one, :permission_two)
+    #
     def set_user_group(name, *perms)
       user_groups[name] ||= []
       perms.each do |perm|
@@ -98,6 +103,8 @@ module Lockdown
       get_permissions.include?(permission_symbol)
     end
 
+    alias_method :has_permission?, :permission_exists?
+
     # Returns array of user group names as symbols
     def get_user_groups
       user_groups.keys
@@ -108,6 +115,7 @@ module Lockdown
       get_user_groups.include?(user_group_symbol)
     end
 
+    alias_method :has_user_group?, :user_group_exists?
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # =Convenience methods for permissions and user groups
@@ -120,13 +128,6 @@ module Lockdown
         find_or_create_by_name(Lockdown.administrator_group_string)
     end
 
-
-    # Determine if the user group is defined in init.rb
-    def has_user_group?(ug)
-      sym = Lockdown.get_symbol(ug)
-      return true if sym == Lockdown.administrator_group_symbol
-      user_group_exists?(sym)
-    end
 
     # Returns array of controller/action values all logged in users can access.
     def standard_authorized_user_rights
@@ -206,6 +207,7 @@ module Lockdown
       end
     end
 
+    # Returns and array of permission symbols for the user group
     def permissions_for_user_group(ug)
       sym = Lockdown.get_symbol(ug)
       perm_array = []  
