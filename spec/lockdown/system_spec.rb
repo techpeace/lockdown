@@ -16,6 +16,25 @@ describe Lockdown::System do
     Lockdown::System.fetch_controller_class(:users).should equal(klass)
   end
 
+  describe "#configure" do
+    it "should call the methods responsible for defining the rules" do
+      Lockdown::System.stub!(:skip_sync?).and_return(false)
+
+      Lockdown::System.should_receive :set_defaults 
+ 
+      Lockdown::System.should_receive :load_controller_classes
+
+      Lockdown::System.should_receive :instance_eval
+ 
+      Lockdown::System.should_receive :process_rules
+ 
+      Lockdown::Database.should_receive :sync_with_db 
+     
+      Lockdown::System.configure do
+      end
+    end
+  end
+
   describe "#paths_for" do
     it "should join the str_sym to the methods" do 
       Lockdown::System.paths_for(:users, :show, :edit).
