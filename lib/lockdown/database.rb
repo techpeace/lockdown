@@ -19,24 +19,22 @@ module Lockdown
         puts ">> Lockdown sync failed: #{e}" 
       end
 
-      private
-
       # Create permissions not found in the database
       def create_new_permissions
         @permissions.each do |key|
           next if Lockdown::System.permission_assigned_automatically?(key)
           str = Lockdown.get_string(key)
-          p = Permission.find(:first, :conditions => ["name = ?", str])
+          p = ::Permission.find(:first, :conditions => ["name = ?", str])
           unless p
             puts ">> Lockdown: Permission not found in db: #{str}, creating."
-            Permission.create(:name => str)
+            ::Permission.create(:name => str)
           end
         end
       end
 
       # Delete the permissions not found in init.rb
       def delete_extinct_permissions
-        db_perms = Permission.find(:all).dup
+        db_perms = ::Permission.find(:all).dup
         db_perms.each do |dbp|
           unless @permissions.include?(Lockdown.get_symbol(dbp.name))
             puts ">> Lockdown: Permission no longer in init.rb: #{dbp.name}, deleting."
@@ -67,7 +65,7 @@ module Lockdown
         ug = UserGroup.create(:name => name_str)
         #Inefficient, definitely, but shouldn't have any issues across orms.
         Lockdown::System.permissions_for_user_group(key) do |perm|
-          p = Permission.find(:first, :conditions => ["name = ?", Lockdown.get_string(perm)])
+          p = ::Permission.find(:first, :conditions => ["name = ?", Lockdown.get_string(perm)])
           Lockdown.database_execute <<-SQL 
                 insert into permissions_user_groups(permission_id, user_group_id)
                 values(#{p.id}, #{ug.id})
@@ -97,7 +95,7 @@ module Lockdown
           # if not found, add it
           unless found
             puts ">> Lockdown: Permission: #{perm_string} not found for User Group: #{ug.name}, adding it."
-            p = Permission.find(:first, :conditions => ["name = ?", perm_string])
+            p = ::Permission.find(:first, :conditions => ["name = ?", perm_string])
             ug.permissions << p
           end
         end
