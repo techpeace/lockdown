@@ -17,6 +17,7 @@ module Lockdown
         maintain_user_groups
       rescue Exception => e
         puts ">> Lockdown sync failed: #{e}" 
+        puts "\t\t#{e.backtrace.join("\n\t\t")}"
       end
 
       # Create permissions not found in the database
@@ -48,7 +49,7 @@ module Lockdown
         # Create user groups not found in the database
         @user_groups.each do |key|
           str = Lockdown.get_string(key)
-          unless ug = UserGroup.find(:first, :conditions => ["name = ?", str])
+          unless ug = ::UserGroup.find(:first, :conditions => ["name = ?", str])
             create_user_group(str, key)
           else
             # Remove permissions from user group not found in init.rb
@@ -62,14 +63,13 @@ module Lockdown
 
       def create_user_group(name_str, key)
         puts ">> Lockdown: UserGroup not in the db: #{name_str}, creating."
-        ug = UserGroup.create(:name => name_str)
+        ug = ::UserGroup.create(:name => name_str)
         #Inefficient, definitely, but shouldn't have any issues across orms.
-        Lockdown::System.permissions_for_user_group(key) do |perm|
-          p = ::Permission.find(:first, :conditions => ["name = ?", Lockdown.get_string(perm)])
-          Lockdown.database_execute <<-SQL 
-                insert into permissions_user_groups(permission_id, user_group_id)
-                values(#{p.id}, #{ug.id})
-          SQL
+        Lockdown::System.permissions_for_user_group(key).each do |perm|
+          p = ::Permission.find(:first, :conditions => ["name = ?", 
+                                Lockdown.get_string(perm)])
+
+          Lockdown.database_execute "insert into permissions_user_groups(permission_id, user_group_id) values(#{p.id}, #{ug.id})"
         end
       end
 
