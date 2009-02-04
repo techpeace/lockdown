@@ -142,7 +142,7 @@ module Lockdown
       rights = standard_authorized_user_rights
         
       usr.user_groups.each do |grp|
-        permissions_for_user_group(grp) do |perm|
+        permissions_for_user_group(grp).each do |perm|
           rights += access_rights_for_permission(perm) 
         end
       end
@@ -227,11 +227,7 @@ module Lockdown
           raise SecurityError, msg
         end
 
-        if block_given?
-          yield perm_sym
-        else
-          perm_array << perm_sym
-        end
+        perm_array << perm_sym
       end
 
       perm_array 
