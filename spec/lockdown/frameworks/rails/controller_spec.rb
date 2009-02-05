@@ -11,8 +11,6 @@ describe Lockdown::Frameworks::Rails::Controller do
 
     @actions = %w(posts/index posts/show posts/new posts/edit posts/create posts/update posts/destroy)
 
-    #@controller.stub!(:available_actions).with(:posts).and_return(@actions)
-
     @lockdown = mock("lockdown")
   end
 
@@ -40,6 +38,10 @@ end
 describe Lockdown::Frameworks::Rails::Controller::Lock do
   before do
     @controller = TestAController.new
+
+    @actions = %w(posts/index posts/show posts/new posts/edit posts/create posts/update posts/destroy)
+
+    @session = {:access_rights => @actions}
   end
   
   describe "#configure_lockdown" do
@@ -50,4 +52,18 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
       @controller.configure_lockdown
     end
   end
+
+  describe "#set_current_user" do
+  end
+
+  describe "#check_request_authorization" do
+  end
+
+  describe "#path_allowed" do
+    it "should return false for an invalid path" do
+      @controller.stub!(:session).and_return(@session)
+      @controller.path_allowed?("/no/good").should be_false
+    end
+  end
+
 end
