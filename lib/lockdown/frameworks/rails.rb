@@ -30,7 +30,7 @@ module Lockdown
       module Environment
 
         def project_root
-          RAILS_ROOT
+          ::RAILS_ROOT
         end
 
         def init_file
