@@ -3,7 +3,7 @@ module Lockdown
   class PermissionScopeCollision < StandardError; end
 
   class Controller
-    attr_accessor :name, :methods
+    attr_accessor :name, :access_methods
 
     def initialize(name)
       @name = name
@@ -24,7 +24,6 @@ module Lockdown
   
   class Permission
     attr_reader :name, :controllers, :models
-    attr_reader :public_access, :protected_access
 
     # A Permission is a set of rules that are, through UserGroups, assigned
     # to users to allow access to system resources.
@@ -85,7 +84,7 @@ module Lockdown
       validate_context
 
       controller = Controller.new(name_symbol)
-      controller.methods = paths_for(name_symbol)
+      controller.access_methods = paths_for(name_symbol)
       @controllers[name_symbol] = controller
       @current_context = Lockdown::ControllerContext.new(name_symbol)
       self
@@ -96,7 +95,8 @@ module Lockdown
     def only_methods(*methods)
       validate_context
 
-      current_controller.methods = paths_for(current_controller.name, *methods)
+      current_controller.access_methods = paths_for(current_controller.name, 
+                                                    *methods)
       @current_context = Lockdown::RootContext.new(@name)
       self
     end
@@ -104,7 +104,9 @@ module Lockdown
     def except_methods(*methods)
       validate_context
 
-      current_controller.methods = current_controller.methods - paths_for(current_controller.name, *methods)
+      current_controller.
+        methods = current_controller.methods - paths_for(current_controller.name, 
+                                                         *methods)
       @current_context = Lockdown::RootContext.new(@name)
       self
     end
@@ -142,15 +144,23 @@ module Lockdown
 
     alias_method :includes, :is_in
 
+    def public_access?
+      @public_access
+    end
+
+    def protected_access?
+      @protected_access
+    end
+
     def set_as_public_access
-      if protected_access
+      if protected_access?
         raise PermissionScopeCollision, "Permission: #{name} already marked as protected and trying to set as public."
       end
       @public_access = true
     end
 
     def set_as_protected_access
-      if public_access
+      if public_access?
         raise PermissionScopeCollision, "Permission: #{name} already marked as public and trying to set as protected."
       end
       @protected_access = true
