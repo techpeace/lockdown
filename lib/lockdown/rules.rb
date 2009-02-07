@@ -215,11 +215,11 @@ module Lockdown
       return [] if usr.nil?
       if administrator?(usr)
         get_permissions.collect do |k| 
-          Permission.find_by_name(Lockdown.get_string(k))
+          ::Permission.find_by_name(Lockdown.get_string(k))
         end.compact
       else
-        user_groups_assignable_for_user(usr).collect do
-          |g| g.permissions
+        user_groups_assignable_for_user(usr).collect do |g| 
+          g.permissions
         end.flatten.compact
       end
     end
