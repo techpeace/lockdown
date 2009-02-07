@@ -18,16 +18,16 @@ module Lockdown
       session[:access_rights] == :all
     end
 
-    private
-
     def add_lockdown_session_values(user)
       session[:access_rights] = Lockdown::System.access_rights_for_user(user)
     end
 
     def access_in_perm?(perm)
-      Lockdown::System.permissions[perm].each do |ar|
-        return true if session_access_rights_include?(ar)
-      end unless Lockdown::System.permissions[perm].nil?
+      if Lockdown::System.permissions[perm]
+        Lockdown::System.permissions[perm].each do |ar|
+          return true if session_access_rights_include?(ar)
+        end 
+      end
       false
     end
 
