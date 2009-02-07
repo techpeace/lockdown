@@ -5,11 +5,6 @@ describe Lockdown do
     Lockdown.stub!(:version).and_return('1.2.3')
   end
 
-  it "should add the directory to the load path" do
-    dir = File.expand_path(File.join(File.dirname(__FILE__), %w[.. lib]))
-    $:.should include(dir)
-  end
-
   it "should return the correct major version" do
     Lockdown.major_version.should equal(1)
   end
