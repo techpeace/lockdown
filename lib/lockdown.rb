@@ -1,13 +1,9 @@
-$:.unshift(File.dirname(__FILE__)) unless
- $:.include?(File.dirname(__FILE__)) || 
- $:.include?(File.expand_path(File.dirname(__FILE__)))
-
-require File.join("lockdown", "helper")
+require File.join(File.dirname(__FILE__), "lockdown", "helper")
 
 module Lockdown
   extend Lockdown::Helper
 
-  VERSION = '0.7.1'
+  VERSION = '0.8.0'
 
   # Returns the version string for the library.
   def self.version
@@ -61,13 +57,12 @@ module Lockdown
   end # mixin_resource?
 end # Lockdown
 
-
-require File.join("lockdown", "context")
-require File.join("lockdown", "permission")
-require File.join("lockdown", "database")
-require File.join("lockdown", "session")
-require File.join("lockdown", "rules")
-require File.join("lockdown", "system")
+require File.join(File.dirname(__FILE__), "lockdown", "session")
+require File.join(File.dirname(__FILE__), "lockdown", "context")
+require File.join(File.dirname(__FILE__), "lockdown", "permission")
+require File.join(File.dirname(__FILE__), "lockdown", "database")
+require File.join(File.dirname(__FILE__), "lockdown", "rules")
+require File.join(File.dirname(__FILE__), "lockdown", "system")
 
 puts "=> Mixing in Lockdown version: #{Lockdown.version} \n"
 
