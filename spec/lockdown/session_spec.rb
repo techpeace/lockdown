@@ -17,7 +17,7 @@ describe Lockdown::Session do
 
   describe "#nil_lockdown_values" do
     it "should nil access_rights" do
-      @controller.nil_lockdown_values
+      @controller.send :nil_lockdown_values
       @session[:access_rights].should == nil
     end
   end
@@ -28,7 +28,7 @@ describe Lockdown::Session do
       @session = {:access_rights => @actions}
       @controller.stub!(:session).and_return(@session)
 
-      @controller.current_user_access_in_group?(:group).should == true
+      @controller.send(:current_user_access_in_group?,:group).should == true
     end
 
     it "should return true if current_user has access" do
@@ -37,7 +37,7 @@ describe Lockdown::Session do
       Lockdown::System.stub!(:permissions).and_return(hash)
 
       Lockdown::System.stub!(:user_groups).and_return(user_groups)
-      @controller.current_user_access_in_group?(:public_group).should be_true
+      @controller.send(:current_user_access_in_group?,:public_group).should be_true
     end
 
     it "should return false if current_user has access" do
@@ -46,7 +46,7 @@ describe Lockdown::Session do
       Lockdown::System.stub!(:permissions).and_return(hash)
 
       Lockdown::System.stub!(:user_groups).and_return(user_groups)
-      @controller.current_user_access_in_group?(:public_group).should be_false
+      @controller.send(:current_user_access_in_group?,:public_group).should be_false
     end
   end
 
@@ -56,7 +56,7 @@ describe Lockdown::Session do
       @session = {:access_rights => @actions}
       @controller.stub!(:session).and_return(@session)
 
-      @controller.current_user_is_admin?.should == true
+      @controller.send(:current_user_is_admin?).should == true
     end
   end
 
@@ -64,7 +64,7 @@ describe Lockdown::Session do
     it "should set the access_rights from the user list" do
       array  = ["posts/index", "posts/show"]
       Lockdown::System.stub!(:access_rights_for_user).and_return(array)
-      @controller.add_lockdown_session_values(:user_object).
+      @controller.send(:add_lockdown_session_values,:user_object).
         should == array
     end
   end
@@ -73,13 +73,13 @@ describe Lockdown::Session do
   describe "#access_in_perm" do
     it "should return false if permissions nil" do
       Lockdown::System.stub!(:permissions).and_return({})
-      @controller.access_in_perm?(:dummy).should be_false
+      @controller.send(:access_in_perm?,:dummy).should be_false
     end
 
     it "should return true if permission found" do
       hash  = {:public => ["posts/index", "posts/show"]}
       Lockdown::System.stub!(:permissions).and_return(hash)
-      @controller.access_in_perm?(:public).should be_true
+      @controller.send(:access_in_perm?,:public).should be_true
     end
   end
 
