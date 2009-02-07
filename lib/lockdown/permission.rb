@@ -187,5 +187,9 @@ module Lockdown
         raise InvalidRuleContext, "Method: #{calling_method} was called on wrong context #{current_context}. Allowed methods are: #{current_context.allowed_methods.join(',')}."
       end
     end
+
+    def paths_for(controller, *methods)
+      Lockdown::System.paths_for(controller, *methods)
+    end
   end
 end
