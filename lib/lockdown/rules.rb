@@ -104,6 +104,21 @@ module Lockdown
     end
 
     alias_method :has_permission?, :permission_exists?
+    
+    # returns true if the permission is public
+    def public_access?(permmision_symbol)
+      public_access.include?(permmision_symbol)
+    end
+
+    # returns true if the permission is public
+    def protected_access?(permmision_symbol)
+      protected_access.include?(permmision_symbol)
+    end
+
+    # These permissions are assigned by the system 
+    def permission_assigned_automatically?(permmision_symbol)
+      public_access?(permmision_symbol) || protected_access?(permmision_symbol)
+    end
 
     # Returns array of user group names as symbols
     def get_user_groups
@@ -111,7 +126,9 @@ module Lockdown
     end
 
     # Is the user group defined?
+    #   The :administrators user group always exists
     def user_group_exists?(user_group_symbol)
+      return true if user_group_symbol == Lockdown.administrator_group_symbol
       get_user_groups.include?(user_group_symbol)
     end
 
