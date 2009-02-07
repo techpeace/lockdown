@@ -260,8 +260,14 @@ module Lockdown
     def parse_permissions
       permission_objects.each do |name, perm|
         @permissions[perm.name] ||= []
-        perm.controllers.collect do |controller|
-          @permissions[perm.name] << controller.methods
+        perm.controllers.each do |name, controller|
+          @permissions[perm.name] << controller.access_methods
+
+          if perm.public_access?
+            @public_access.concat controller.access_methods
+          elsif perm.protected_access?
+            @protected_access.concat controller.access_methods
+          end
         end
       end
     end
