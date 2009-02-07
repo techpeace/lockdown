@@ -56,10 +56,8 @@ module Lockdown
 end # Lockdown module
 
 ActionController::Base.class_eval do
- include Lockdown::Session
-end
+  include Lockdown::Session
 
-ActionController::Base.class_eval do 
   helper_method :logged_in?, 
     :current_user,
     :current_user_name, 
