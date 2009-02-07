@@ -84,10 +84,16 @@ module Lockdown
         end
 
         def maybe_load_framework_controller_parent
-          if ActiveSupport.const_defined?("Dependencies")
-            ActiveSupport::Dependencies.require_or_load("application.rb")
+          if RAILS_GEM_VERSION >= "2.3" 
+            filename = "application_controller.rb"
           else
-            Dependencies.require_or_load("application.rb")
+            filename = "application.rb"
+          end
+
+          if ActiveSupport.const_defined?("Dependencies")
+            ActiveSupport::Dependencies.require_or_load(filename)
+          else
+            Dependencies.require_or_load(filename)
           end
         end
 
