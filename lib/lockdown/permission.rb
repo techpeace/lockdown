@@ -104,9 +104,8 @@ module Lockdown
     def except_methods(*methods)
       validate_context
 
-      current_controller.
-        methods = current_controller.methods - paths_for(current_controller.name, 
-                                                         *methods)
+      current_controller.access_methods = current_controller.access_methods - paths_for(current_controller.name, *methods)
+
       @current_context = Lockdown::RootContext.new(@name)
       self
     end

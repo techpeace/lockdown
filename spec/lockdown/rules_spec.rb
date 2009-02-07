@@ -27,7 +27,7 @@ describe Lockdown::Rules do
       @rules.set_permission(:home_page)
       @rules.set_public_access(:home_page)
       perm = @rules.permission_objects.find{|name, object| name == :home_page}
-      perm[1].public_access.should be_true
+      perm[1].public_access?.should be_true
     end
 
     it "should raise and InvalidRuleAssignment if permission does not exist" do
@@ -42,7 +42,7 @@ describe Lockdown::Rules do
       @rules.set_permission(:user_management)
       @rules.set_protected_access(:user_management)
       perm = @rules.permission_objects.find{|name, object| name == :user_management}
-      perm[1].protected_access.should be_true
+      perm[1].protected_access?.should be_true
     end
 
     it "should raise and InvalidRuleAssignment if permission does not exist" do
