@@ -1,5 +1,7 @@
 module Lockdown
   module Session
+    protected
+
     def nil_lockdown_values
       [:expiry_time, :user_id, :user_name, :user_profile_id, :access_rights].each do |val|
         session[val] = nil if session[val]
