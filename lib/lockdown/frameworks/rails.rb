@@ -84,7 +84,7 @@ module Lockdown
         end
 
         def maybe_load_framework_controller_parent
-          if RAILS_GEM_VERSION >= "2.3" 
+          if ::Rails::VERSION::MAJOR >= 2 && ::Rails::VERSION::MINOR >= 3
             filename = "application_controller.rb"
           else
             filename = "application.rb"
