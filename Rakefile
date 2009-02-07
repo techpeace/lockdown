@@ -35,5 +35,7 @@ PROJ.version = Lockdown::VERSION
 PROJ.rubyforge.name = 'lockdown'
 
 PROJ.spec.opts << '--color'
+PROJ.exclude << ".swp"
+PROJ.exclude << ".gitignore"
 
 # EOF
