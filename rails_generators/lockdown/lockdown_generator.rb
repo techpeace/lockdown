@@ -137,7 +137,7 @@ class LockdownGenerator < Rails::Generator::Base
   end
 
   def add_login_permissions
-    add_permissions "set_permission :sessions_management, all_methods(:sessions)"
+    add_permissions "set_permission(:sessions_management).with_controller(:sessions)"
     
     add_predefined_user_group "set_public_access :sessions_management"
   end
@@ -157,10 +157,10 @@ class LockdownGenerator < Rails::Generator::Base
 
   def add_management_permissions
     perms = []
-    perms << "set_permission :users_management, all_methods(:#{@namespace.blank? ? "users" : "#{@namespace}__users"})"
-    perms << "set_permission :user_groups_management, all_methods(:#{@namespace.blank? ? "user_groups" : "#{@namespace}__user_groups"})"
-    perms << "set_permission :permissions_management, all_methods(:#{@namespace.blank? ? "permissions" : "#{@namespace}__permissions"})"
-    perms << "set_permission :my_account, only_methods(:#{@namespace.blank? ? "users" : "#{@namespace}__users"}, :edit, :update, :show)"
+    perms << "set_permission(:users_management).with_controller(:#{@namespace.blank? ? "users" : "#{@namespace}__users"})"
+    perms << "set_permission(:user_groups_management).with_controller(:#{@namespace.blank? ? "user_groups" : "#{@namespace}__user_groups"})"
+    perms << "set_permission(:permissions_management).with_controller(:#{@namespace.blank? ? "permissions" : "#{@namespace}__permissions"})"
+    perms << "set_permission(:my_account).with_controller(:#{@namespace.blank? ? "users" : "#{@namespace}__users"}).only_methods(:edit, :update, :show)"
 
     add_permissions perms.join("\n  ")
     
