@@ -22,17 +22,22 @@ describe Lockdown::Frameworks::Rails do
 
   describe "#mixin" do
     it "should perform class_eval on controller view and system to inject itself" do
-      mod = mock("rails specific functionality")
+      module ActionController; class Base; end end
+      module ActionView; class Base; end end
 
-      Lockdown.stub!(:controller_parent).and_return(mod)
-      Lockdown.stub!(:view_helper).and_return(mod)
+      Lockdown.stub!(:controller_parent).and_return(ActionController::Base)
+      Lockdown.stub!(:view_helper).and_return(ActionView::Base)
+
+      ActionView::Base.should_receive(:class_eval)
+
+      ActionController::Base.should_receive(:class_eval)
 
       Lockdown::System.should_receive(:class_eval)
 
-      mod.should_receive(:class_eval).twice
 
       @rails.mixin
     end
+
   end
 end
 
@@ -83,3 +88,83 @@ describe Lockdown::Frameworks::Rails::Environment do
   end
 end
 
+describe Lockdown::Frameworks::Rails::System do
+  class Test 
+    extend Lockdown::Frameworks::Rails::System
+    class << self
+      attr_accessor :controller_classes
+    end
+  end
+
+  module Rails
+    module VERSION
+      MAJOR = 2
+      MINOR = 2
+      TINY  = 2
+    end    
+  end
+
+  before do
+    @env = Test
+    @env.controller_classes = {}
+  end
+
+  describe "#skip_sync?" do
+  end
+
+  describe "#load_controller_classes" do
+  end
+
+  describe "#maybe_load_framework_controller_parent" do
+    it "should call require_or_load with application.rb < 2.3" do
+      @env.should_receive(:require_or_load).with("application.rb")
+
+      @env.maybe_load_framework_controller_parent
+    end
+
+    it "should call require_or_load with application_controller.rb >= 2.3" do
+      module Rails
+        module VERSION 
+          MINOR = 3
+          TINY  = 0
+        end    
+      end
+
+      @env.should_receive(:require_or_load).with("application_controller.rb")
+
+      @env.maybe_load_framework_controller_parent
+    end
+  end
+
+  describe "#lockdown_load" do
+    it "should add class to controller classes" do
+      @env.stub!(:class_name_from_file).and_return("controller_class")
+      Lockdown.stub!(:qualified_const_get).and_return(:controller_class)
+      @env.stub!(:require_or_load)
+
+      @env.lockdown_load("controller_file")
+
+      @env.controller_classes["ControllerFile"].should == :controller_class
+    end
+  end
+
+  describe "#require_or_load" do
+    it "should use Dependencies if not defined in ActiveSupport" do
+      module ActiveSupport; end
+      Dependencies = mock("dependencies") unless defined?(Dependencies)
+
+      Dependencies.should_receive(:require_or_load).with("controller_file")
+
+      @env.require_or_load("controller_file")
+    end
+
+    it "should use ActiveSupport::Dependencies if defined" do
+      module ActiveSupport; class Dependencies; end end
+
+      ActiveSupport::Dependencies.should_receive(:require_or_load).
+        with("controller_file")
+
+      @env.require_or_load("controller_file")
+    end
+  end
+end
