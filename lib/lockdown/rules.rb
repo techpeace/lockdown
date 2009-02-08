@@ -29,7 +29,8 @@ module Lockdown
         :access_denied_path => "/",
         :successful_login_path => "/",
         :subdirectory => nil,
-        :skip_db_sync_in => ["test"]
+        :skip_db_sync_in => ["test"],
+        :link_separator => ' | '
       }
     end
 
