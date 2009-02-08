@@ -89,24 +89,25 @@ module Lockdown
           else
             filename = "application.rb"
           end
+          
+          require_or_load(filename)
+        end
 
+        def lockdown_load(filename)
+          klass = Lockdown.class_name_from_file(filename)
+
+          require_or_load(filename)
+
+          @controller_classes[klass] = Lockdown.qualified_const_get(klass) 
+        end
+
+        def require_or_load(filename)
           if ActiveSupport.const_defined?("Dependencies")
             ActiveSupport::Dependencies.require_or_load(filename)
           else
             Dependencies.require_or_load(filename)
           end
         end
-
-        def lockdown_load(file)
-          klass = Lockdown.class_name_from_file(file)
-          if ActiveSupport.const_defined?("Dependencies")
-            ActiveSupport::Dependencies.require_or_load(file)
-          else
-            Dependencies.require_or_load(file)
-          end
-          @controller_classes[klass] = Lockdown.qualified_const_get(klass) 
-        end
-
       end # System
     end # Rails
   end # Frameworks
