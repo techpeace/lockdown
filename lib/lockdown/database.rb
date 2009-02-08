@@ -17,7 +17,6 @@ module Lockdown
         maintain_user_groups
       rescue Exception => e
         puts ">> Lockdown sync failed: #{e}" 
-        puts "\t\t#{e.backtrace.join("\n\t\t")}"
       end
 
       # Create permissions not found in the database
