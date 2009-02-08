@@ -22,6 +22,14 @@ describe Lockdown::Frameworks::Rails::Controller do
       @controller.available_actions(post_controller).
         should == @actions
     end
+
+    it "should eql public_instance_methods - hidden_actions unless action_methods" do
+      post_controller = mock("PostController")
+      post_controller.stub!(:public_instance_methods).and_return(["m1", "m2", "h1"])
+      post_controller.stub!(:hidden_actions).and_return(["h1"])
+      @controller.available_actions(post_controller).
+        should == ["m1", "m2"]
+    end
   end
 
   describe "#controller_name" do
@@ -42,6 +50,8 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
     @actions = %w(posts/index posts/show posts/new posts/edit posts/create posts/update posts/destroy)
 
     @session = {:access_rights => @actions}
+
+    @controller.stub!(:session).and_return(@session)
   end
   
   describe "#configure_lockdown" do
@@ -54,16 +64,157 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
   end
 
   describe "#set_current_user" do
+    it "should set the profile_id in Thread.current" do
+      @controller.stub!(:logged_in?).and_return(true)
+      @controller.stub!(:current_profile_id).and_return(1234)
+
+      @controller.set_current_user
+
+      Thread.current[:profile_id].should == 1234
+    end
   end
 
   describe "#check_request_authorization" do
+    it "should raise SecurityError if not authorized" do
+      @controller.stub!(:authorized?).and_return(false)
+      @controller.stub!(:params).and_return({:p => 1})
+
+      lambda{@controller.check_request_authorization}.
+        should raise_error(SecurityError)
+
+    end
   end
 
   describe "#path_allowed" do
     it "should return false for an invalid path" do
-      @controller.stub!(:session).and_return(@session)
       @controller.path_allowed?("/no/good").should be_false
     end
   end
 
+  describe "#check_session_expiry" do
+    it "should set expiry if null" do
+      Lockdown::System.stub!(:fetch).with(:session_timeout).and_return(10)
+      @session[:expiry_time].should be_nil
+      @controller.check_session_expiry
+      @session[:expiry_time].should_not be_nil
+    end
+  end
+
+  describe "#store_location" do
+    it "should set prevpage and thispage" do
+      request = mock("request")
+      request.stub!(:method).and_return(:get)
+      @controller.stub!(:request).and_return(request)
+
+      @controller.stub!(:sent_from_uri).and_return("/blop")
+      @controller.store_location
+
+      @session[:prevpage].should == ''
+      @session[:thispage].should == '/blop'
+    end
+  end
+
+  describe "#sent_from_uri" do
+    it "should return request.request_uri" do
+      request = mock("request")
+      request.stub!(:request_uri).and_return("/blip")
+
+      @controller.stub!(:request).and_return(request)
+
+      @controller.sent_from_uri.should == "/blip"
+    end
+  end
+
+  describe "#authorized?" do
+    before do
+      @sample_url = "http://stonean.com/posts/index"
+      @a_path = "/a_path"
+
+      request = mock("request")
+      request.stub!(:method).and_return(:get)
+      @controller.stub!(:request).and_return(request)
+
+      stonean_parts = ["http", nil, "stonean.com", nil, nil, "posts/index", nil, nil, nil]
+
+      a_path_parts = [nil, nil, nil, nil, nil, "/a_path", nil, nil, nil]
+
+      URI = mock('uri class') unless defined?(URI)
+      URI.stub!(:split).with(@sample_url).and_return(stonean_parts)
+      URI.stub!(:split).with(@a_path).and_return(a_path_parts)
+    end
+
+    it "should return false if url is nil" do
+      @controller.authorized?(nil).should be_false
+    end
+
+    it "should return true if current_user_is_admin" do
+      @controller.stub!(:current_user_is_admin?).and_return(true)
+      @controller.authorized?(@a_path).should be_true
+    end
+
+    it "should return false if path not in access_rights" do
+      @controller.authorized?(@a_path).should be_false
+    end
+
+    it "should return true if path is in access_rights" do
+      @controller.authorized?(@sample_url).should be_true
+    end
+
+  end
+
+  describe "#access_denied" do
+  end
+
+  describe "#path_from_hash" do
+    it "should return controller/action string" do
+      hash = {:controller => "users", :action => "show", :id => "1"}
+      @controller.path_from_hash(hash).should == "users/show"
+    end
+  end
+
+  describe "#remote_url?" do
+    it "should return false if domain is nil" do
+      @controller.remote_url?.should be_false
+    end
+
+    it "should return false if domain matches request domain" do
+      request = mock("request")
+      request.stub!(:host).and_return("stonean.com")
+      @controller.stub!(:request).and_return(request)
+      @controller.remote_url?("stonean.com").should be_false
+    end
+
+    it "should return true if subdomain differs" do
+      request = mock("request")
+      request.stub!(:host).and_return("blog.stonean.com")
+      @controller.stub!(:request).and_return(request)
+      @controller.remote_url?("stonean.com").should be_true
+    end
+
+    it "should return true if host doesn't match  domain" do
+      request = mock("request")
+      request.stub!(:host).and_return("stonean.com")
+      @controller.stub!(:request).and_return(request)
+      @controller.remote_url?("google.com").should be_true
+    end
+  end
+
+  describe "#redirect_back_or_default" do
+    it "should redirect to default without session[:prevpage]" do
+      @controller.should_receive(:redirect_to).with("/")
+      @controller.redirect_back_or_default("/")
+    end
+
+    it "should redirect to session[:prevpage]" do
+      @session[:prevpage] = "/previous"
+      @controller.should_receive(:redirect_to).with("/previous")
+      @controller.redirect_back_or_default("/")
+    end
+  end
+
+  describe "#login_from_basic_auth?" do
+  end
+
+  describe "#get_auth_data" do
+  end
 end

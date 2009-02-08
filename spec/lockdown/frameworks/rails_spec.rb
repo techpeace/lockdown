@@ -65,5 +65,21 @@ describe Lockdown::Frameworks::Rails::Environment do
       @env.controller_class_name("admin__user").should == "Admin::UserController"
     end
   end
+
+  describe "#controller_parent" do
+    it "should return ActionController::Base" do
+      module ActionController; class Base; end end
+
+      @env.controller_parent.should == ActionController::Base
+    end
+  end
+
+  describe "#view_helper" do
+    it "should return ActionView::Base" do
+      module ActionView; class Base; end end
+      
+      @env.view_helper.should == ActionView::Base
+    end
+  end
 end
 

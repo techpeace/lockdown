@@ -20,7 +20,7 @@ describe Lockdown::Database do
     it "should create permission from @permissions" do
       Lockdown::System.stub!(:permission_assigned_automatically?).and_return(false)
 
-      Permission = mock('Permission')
+      Permission = mock('Permission') unless defined?(Permission)
       Permission.stub!(:find).and_return(false)
       Permission.should_receive(:create).with(:name => 'Permission')
 
@@ -35,7 +35,7 @@ describe Lockdown::Database do
       permission.stub!(:name).and_return("sweet permission")
       permissions = [permission]
 
-      Permission = mock('Permission')
+      Permission = mock('Permission') unless defined?(Permission)
       Permission.stub!(:find).with(:all).and_return(permissions)
 
       Lockdown.should_receive(:database_execute).
@@ -48,7 +48,7 @@ describe Lockdown::Database do
 
   describe "#maintain_user_groups" do
     before do
-      UserGroup = mock('UserGroup')
+      UserGroup = mock('UserGroup') unless defined?(UserGroup)
     end
 
     it "should create user group for non-existent user group" do
@@ -84,7 +84,7 @@ describe Lockdown::Database do
       ug = mock('user group')
       ug.stub!(:id).and_return(123)
 
-      UserGroup = mock('UserGroup')
+      UserGroup = mock('UserGroup') unless defined?(UserGroup)
 
       UserGroup.should_receive(:create).
         with(:name => "some group").
@@ -96,7 +96,7 @@ describe Lockdown::Database do
       perm = mock('permission')
       perm.stub!(:id).and_return(3344)
 
-      Permission = mock('Permission')
+      Permission = mock('Permission') unless defined?(Permission)
 
       Permission.should_receive(:find).
         with(:first, :conditions => ["name = ?",'Perm']).
@@ -142,7 +142,7 @@ describe Lockdown::Database do
       #returns what's in the database
       user_group.stub!(:permissions).and_return(permissions)
 
-      Permission = mock('Permission')
+      Permission = mock('Permission') unless defined?(Permission)
 
       #get the permission object for the undefined_perm
       Permission.should_receive(:find).
