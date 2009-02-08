@@ -47,7 +47,6 @@ module Lockdown
               login_from_basic_auth? unless logged_in?
               if logged_in?
                 Thread.current[:profile_id] = current_profile_id
-                Thread.current[:client_id] = current_client_id if respond_to? :current_client_id
               end
             end
 
