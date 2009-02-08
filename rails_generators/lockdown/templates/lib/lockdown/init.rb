@@ -22,6 +22,9 @@ Lockdown::System.configure do
   # Set redirect to path on successful login:
   #       options[:successful_login_path] = "/"
   #
+  # Set separator on links call
+  #       options[:links_separator] = "|"
+  #
   # If deploying to a subdirectory, set that here. Defaults to nil
   #       options[:subdirectory] = "blog"
   #       *Notice: Do not add leading or trailing slashes,
@@ -31,17 +34,15 @@ Lockdown::System.configure do
   # Define permissions
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #
-  # set_permission(:product_management, all_methods(:products))
+  # set_permission(:product_management).
+  #   with_controller(:products)
   #
   # :product_management is the name of the permission which is later
   # referenced by the set_user_group method
   #
-  # :all_methods(:products) will return an array of all controller actions
-  # for the products controller
-  #
-  # If you need to reference a namespaced controller use two underscores:
-  # :admin__products would tell lockdown to look for:
-  # app/controllers/admin/products_controller.rb
+  # .with_controller(:products) defaults to all action_methods available on that
+  #  controller.  You can change this behaviour by chaining on except_methods or
+  #  only_methods.  (see examples below)
   #
   # if products is your standard RESTful resource you'll get:
   #   ["products/index , "products/show",
@@ -49,23 +50,30 @@ Lockdown::System.configure do
   #    "products/create", "products/update",
   #    "products/destroy"]
   #
-  # You can pass multiple parameters to concat permissions such as:
+  # You can chain method calls to restrict the methods for one controller
+  # or you can add multiple controllers to one permission.
   #      
-  #	  set_permission(:security_management,all_methods(:users),
-  #                                       all_methods(:user_groups),
-  #                                       all_methods(:permissions) )
+  #   set_permission(:security_management).
+  #     with_controller(:users).
+  #     and_controller(:user_groups).
+  #     and_controller(:permissions) 
   #
-  # In addition to all_methods(:controller) there are:
+  # In addition to with_controller(:controller) there are:
   #
-  #       only_methods(:controller, :only_method_1, :only_method_2)
+  #   set_permission(:some_nice_permission_name).
+  #     with_controller(:some_controller_name).
+  #       only_methods(:only_method_1, :only_method_2)
   #
-  #       all_except_methods(:controller, :except_method_1, :except_method_2)
+  #   set_permission(:some_nice_permission_name).
+  #     with_controller(:some_controller_name).
+  #       except_methods(:except_method_1, :except_method_2)
   #
-  # Some other sample permissions:
-  # 
-  #  set_permission(:sessions, all_methods(:sessions))
-  #  set_permission(:my_account, only_methods(:users, :edit, :update, :show))
-  # 
+  #   set_permission(:some_nice_permission_name).
+  #     with_controller(:some_controller_name).
+  #       except_methods(:except_method_1, :except_method_2).
+  #     and_controller(:another_controller_name).
+  #     and_controller(:yet_another_controller_name)
+  #
   # Define your permissions here:
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
