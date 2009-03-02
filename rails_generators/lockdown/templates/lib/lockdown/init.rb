@@ -44,6 +44,9 @@ Lockdown::System.configure do
   #  controller.  You can change this behaviour by chaining on except_methods or
   #  only_methods.  (see examples below)
   #
+  #  ** To define a namespaced controller use two underscores:
+  #     :admin__products
+  #
   # if products is your standard RESTful resource you'll get:
   #   ["products/index , "products/show",
   #    "products/new", "products/edit",
