@@ -59,14 +59,9 @@ class LockdownGenerator < Rails::Generator::Base
         @m.file "lib/lockdown/init.rb", "lib/lockdown/init.rb"
       end
 
-      if options[:basics]
-        options[:skip_management] = true
-        options[:skip_login] = true
-      end
+      add_management if options[:add_management]
 
-      add_management unless options[:skip_management]
-
-      add_login unless options[:skip_login]
+      add_login if options[:add_login]
 
       add_models
       
@@ -115,17 +110,23 @@ class LockdownGenerator < Rails::Generator::Base
   def add_models
     @m.directory 'app/models'
 
-    write_model("permission")
-    write_model("user")
     write_model("user_group")
-    write_model("profile")
+    write_model("permission") 
+
+    if options[:add_lockdown_authentication]
+      write_model("user") 
+      write_model("profile") 
+    end
 
     unless options[:skip_migrations]
-      write_migration("create_profiles")
-      write_migration("create_users")
       write_migration("create_user_groups")
       write_migration("create_permissions")
-      write_migration("create_admin_user")
+
+      if options[:add_lockdown_authentication]
+        write_migration("create_profiles")
+        write_migration("create_users")
+        write_migration("create_admin_user")
+      end
     end
   end
 
@@ -203,18 +204,36 @@ EOS
   def add_options!(opt)
     opt.separator ''
     opt.separator 'Options:'
+
     opt.on("--namespace=admin",
-      "Install lockdown templates with a namespace, in this example 'admin'.") { |v| options[:namespace] = v }
-    opt.on("--skip-management",
-      "Only lib/lockdown and app/models are generated.") { |v| options[:skip_management] = v }
-    opt.on("--skip-login",
-      "Skips generation of session controller and views.") { |v| options[:skip_login] = v }
-    opt.on("--basics",
-      "Install only models and migrations.  Equivalent to skip-management and skip-login.") { |v| options[:basics] = v }
+      "Install lockdown templates with a namespace, in this example 'admin'.") do |v|
+        options[:namespace] = v 
+      end
+
+    opt.on("--add-lockdown-authentication",
+      "Create user model + --add-login functionality.") do |v| 
+        options[:add_lockdown_authentication] = v
+      end
+
+    opt.on("--add-management",
+      "Create user, user_group, permission management controllers and views.") do |v|
+        options[:add_management] = v
+      end
+
+    opt.on("--add-login",
+      "Create session controller and views.") do |v| 
+        options[:add_login] = v 
+      end
+
     opt.on("--skip-rules",
-        "Skip installation of lib/lockdown/init.rb lib/lockdown/session.rb") { |v| options[:skip_rules] = v }
+      "Skip installation of lib/lockdown/init.rb lib/lockdown/session.rb") do |v| 
+        options[:skip_rules] = v
+      end
+
     opt.on("--skip-migrations",
-      "Skip migrations installation") { |v| options[:skip_migrations] = v }
+      "Skip migrations installation") do |v| 
+        options[:skip_migrations] = v
+      end
   end
 
   def write_migration(str)
