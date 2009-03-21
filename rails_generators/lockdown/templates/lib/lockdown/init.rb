@@ -10,6 +10,12 @@ Lockdown::System.configure do
   # Set timeout to 1 hour:
   #       options[:session_timeout] = (60 * 60)
   #
+  # Set default_creator_id. This is the value assigned to created_by and/or
+  # updated_by when no one is logged in.  Think of it as the system id.
+  #
+  #   For lockdown version < 0.9.0 set to:
+  #       options[:default_creator_id] = Profile::System
+  #
   # Call method when timeout occurs (method must be callable by controller):
   #       options[:session_timeout_method] = :clear_session_values
   #
