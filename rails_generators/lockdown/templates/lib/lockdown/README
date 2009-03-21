@@ -30,7 +30,3 @@
 #  Will return true if the session[:access_rights] contain at 
 #  least one match to the access_right list associated to the group
 #
-
-ActionController::Base.class_eval do
-  include Lockdown::Session
-end
