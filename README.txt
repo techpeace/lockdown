@@ -4,7 +4,7 @@ lockdown
 
 == DESCRIPTION:
 
-Lockdown is a authentication/authorization system for RubyOnRails (ver >= 2.1).
+Lockdown is an authorization system for RubyOnRails (ver >= 2.1).
 
 == INSTALL:
 
