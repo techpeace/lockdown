@@ -51,15 +51,15 @@ module Lockdown
         end
 
         def create_with_stamps
-          profile_id = current_profile_id || Profile::SYSTEM
-          self[:created_by] = profile_id if self.respond_to?(:created_by) 
-          self[:updated_by] = profile_id if self.respond_to?(:updated_by) 
+          pid = current_profile_id || Lockdown::System.fetch(:default_creator_id)
+          self[:created_by] = pid if self.respond_to?(:created_by) 
+          self[:updated_by] = pid if self.respond_to?(:updated_by) 
           create_without_stamps
         end
                   
         def update_with_stamps
-          profile_id = current_profile_id || Profile::SYSTEM
-          self[:updated_by] = profile_id if self.respond_to?(:updated_by)
+          pid = current_profile_id || Lockdown::System.fetch(:default_creator_id)
+          self[:updated_by] = pid if self.respond_to?(:updated_by)
           update_without_stamps
         end
       end
