@@ -17,6 +17,7 @@ module Lockdown
         def mixin
           Lockdown.controller_parent.class_eval do
             include Lockdown::Frameworks::Rails::Controller::Lock
+            include Lockdown::Session
           end
           Lockdown.view_helper.class_eval do
             include Lockdown::Frameworks::Rails::View
