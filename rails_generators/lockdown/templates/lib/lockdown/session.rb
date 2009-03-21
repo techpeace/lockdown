@@ -1,68 +1,36 @@
-module Lockdown
-  #
-  # The Lockdown gem defines additional Session methods:
-  #
-  #  current_user_is_admin?: returns true if user is assigned 
-  #  administrator rights.
-  #
-  #  nil_lockdown_values:  This will nil all session values starting with 
-  #  user_ or access_ or expiry
-  #
-  #  current_user_access_in_group?(grp):  grp is a symbol referencing a 
-  #  Lockdown::UserGroups method such as :registered_users
-  #  Will return true if the session[:access_rights] contain at 
-  #  least one match to the access_right list associated to the group
-  #
-  module Session
-    protected
+#
+#                           !!!!IMPORTANT!!!!
+#
+#*** MUST define a current_user method that will return the current user object
+#
+#*** MUST define a logged_in? method that will return true if a user is logged in
+#
+#*** MUST add call to add_lockdown_session_values to your login method
+#
+#   # This method uses the current_user method.
+#   add_lockdown_session_values
+#
+#
+#                       ~~~~Method Descriptions~~~~
 
-    def set_session_user(user)
-      if user.nil?
-        nil_lockdown_values
-        return
-      end
-      session[:user_id] = user.id
-      session[:user_name] =  user.full_name
-      session[:user_profile_id] = user.profile.id
-
-      #
-      # If you remove this method, you will not gain access to any 
-      # protected resources
-      #
-      add_lockdown_session_values(user)
-    end
-      
-    def logged_in?
-      current_user_id > 0
-    end
-
-    def current_user_id
-      return session[:user_id] || -1
-    end
-
-    def current_user_name
-      session[:user_name]
-    end
-      
-    def current_profile_id
-      return session[:user_profile_id] || -1
-    end
-
-    def current_user
-      return current_user_id > 0 ? User.find(current_user_id, :include => [:profile, :user_groups]) : nil
-    end
-  
-  end # Session module
-end # Lockdown module
+# The Lockdown gem defines these session methods:
+#
+#  current_user_id: returns the id of the current_user
+#
+#  current_user_is_admin?: returns true if user is assigned 
+#  administrator rights.
+#
+#  nil_lockdown_values:  This will nil the following session values:
+#     current_user_id
+#     access_rights
+#     expiry_time
+#
+#  current_user_access_in_group?(grp):  grp is a symbol referencing a 
+#  Lockdown::UserGroups method such as :registered_users
+#  Will return true if the session[:access_rights] contain at 
+#  least one match to the access_right list associated to the group
+#
 
 ActionController::Base.class_eval do
   include Lockdown::Session
-
-  helper_method :logged_in?, 
-    :current_user,
-    :current_user_name, 
-    :current_user_id, 
-    :current_profile_id,
-    :current_user_is_admin?,
-    :current_user_access_in_group?
 end
