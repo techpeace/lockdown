@@ -1,5 +1,3 @@
-require File.join(File.dirname(__FILE__), "session")
-
 Lockdown::System.configure do
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
