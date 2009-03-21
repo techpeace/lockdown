@@ -46,7 +46,8 @@ module Lockdown
             def set_current_user
               login_from_basic_auth? unless logged_in?
               if logged_in?
-                Thread.current[:profile_id] = current_profile_id
+                Thread.current[:who_did_it] = Lockdown::System.
+                  fetch(:who_did_it)
               end
             end
 
