@@ -64,13 +64,14 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
   end
 
   describe "#set_current_user" do
-    it "should set the profile_id in Thread.current" do
+    it "should set who_did_it  in Thread.current" do
+      Lockdown::System.stub!(:fetch).with(:who_did_it).and_return(:current_user_id)
       @controller.stub!(:logged_in?).and_return(true)
-      @controller.stub!(:current_profile_id).and_return(1234)
+      @controller.stub!(:current_user_id).and_return(1234)
 
       @controller.set_current_user
 
-      Thread.current[:profile_id].should == 1234
+      Thread.current[:who_did_it].should == 1234
     end
   end
 
@@ -206,8 +207,10 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
     end
 
     it "should redirect to session[:prevpage]" do
-      @session[:prevpage] = "/previous"
-      @controller.should_receive(:redirect_to).with("/previous")
+      path = "/previous"
+      path.stub!(:blank?).and_return(false)
+      @session[:prevpage] = path
+      @controller.should_receive(:redirect_to).with(path)
       @controller.redirect_back_or_default("/")
     end
   end

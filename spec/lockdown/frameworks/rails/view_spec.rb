@@ -73,14 +73,14 @@ describe Lockdown::Frameworks::Rails::Controller do
 
   describe "#link_to_or_show" do
     it "should return links separated by | " do
+      Lockdown::System.stub!(:fetch).with(:link_separator).and_return(' | ')
       links = ["link_one", "link_two"]
-
       @view.links(links).should == links.join(' | ')
     end
 
     it "should return links separated by | and handle empty strings" do
+      Lockdown::System.stub!(:fetch).with(:link_separator).and_return(' | ')
       links = ["link_one", "link_two", ""]
-
       @view.links(links).should == links.join(' | ')
     end
   end

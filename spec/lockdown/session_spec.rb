@@ -64,8 +64,9 @@ describe Lockdown::Session do
     it "should set the access_rights from the user list" do
       array  = ["posts/index", "posts/show"]
       Lockdown::System.stub!(:access_rights_for_user).and_return(array)
-      @controller.send(:add_lockdown_session_values,:user_object).
-        should == array
+      @controller.stub!(:current_user).and_return(:user_object)
+      @controller.send(:add_lockdown_session_values)
+      @session[:access_rights].should == array
     end
   end
 
