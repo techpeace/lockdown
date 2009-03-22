@@ -14,17 +14,14 @@ Lockdown::System.configure do
   #   When current_user_id returns nil, this is the value to use
   #      options[:default_who_did_it] = 1
   #
+  #   Lockdown version < 0.9.0 set this to:
+  #       options[:default_who_did_it] = Profile::System
+  #
   #   Should probably be something like:
   #      options[:default_who_did_it] = User::SystemId
   #
   # Set timeout to 1 hour:
   #       options[:session_timeout] = (60 * 60)
-  #
-  # Set default_creator_id. This is the value assigned to created_by and/or
-  # updated_by when no one is logged in.  Think of it as the system id.
-  #
-  #   Lockdown version < 0.9.0 set this to:
-  #       options[:default_creator_id] = Profile::System
   #
   # Call method when timeout occurs (method must be callable by controller):
   #       options[:session_timeout_method] = :clear_session_values
