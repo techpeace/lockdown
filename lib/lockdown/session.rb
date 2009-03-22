@@ -3,8 +3,8 @@ module Lockdown
 
     protected
 
-    def add_lockdown_session_values
-      user = current_user
+    def add_lockdown_session_values(user = nil)
+      user ||= current_user
 
       if user
         session[:access_rights] = Lockdown::System.access_rights_for_user(user)
