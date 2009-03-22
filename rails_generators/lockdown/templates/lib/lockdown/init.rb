@@ -8,7 +8,7 @@ Lockdown::System.configure do
   # Set who_did_it method
   #   This method is used in setting the created_by/updated_by fields and
   #   should be accessible to the controller
-  #      options[:who_did_it] = current_user_id
+  #      options[:who_did_it] = :current_user_id
   #
   # Set default_who_did_it
   #   When current_user_id returns nil, this is the value to use

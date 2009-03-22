@@ -25,6 +25,7 @@ module Lockdown
 
       @options = {
         :session_timeout => (60 * 60),
+        :who_did_it => :current_user_id,
         :default_who_did_it => 1,
         :logout_on_access_violation => false,
         :access_denied_path => "/",

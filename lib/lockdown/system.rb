@@ -21,6 +21,13 @@ module Lockdown
       (@options||={})[key]
     end
 
+    def self.call(object, system_option)
+      method = fetch(system_option)
+      if method.is_a?(Symbol) && object.respond_to?(method)
+        object.send(method) 
+      end
+    end
+
     protected 
 
     def self.paths_for(str_sym, *methods)

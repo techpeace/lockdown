@@ -47,7 +47,7 @@ module Lockdown
               login_from_basic_auth? unless logged_in?
               if logged_in?
                 Thread.current[:who_did_it] = Lockdown::System.
-                  fetch(:who_did_it)
+                  call(self, :who_did_it)
               end
             end
 
@@ -65,10 +65,7 @@ module Lockdown
             def check_session_expiry
               if session[:expiry_time] && session[:expiry_time] < Time.now
                 nil_lockdown_values
-                timeout_method = Lockdown::System.fetch(:session_timeout_method)
-                if timeout_method.is_a?(Symbol) && self.respond_to?(timeout_method)
-                  send(timeout_method) 
-                end
+                Lockdown::System.call(self, :session_timeout_method)
               end
               session[:expiry_time] = Time.now + Lockdown::System.fetch(:session_timeout)
             end
