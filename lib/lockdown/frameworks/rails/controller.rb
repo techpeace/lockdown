@@ -140,7 +140,11 @@ module Lockdown
             end
 
             def redirect_back_or_default(default)
-              session[:prevpage] ? redirect_to(session[:prevpage]) : redirect_to(default)
+              if session[:prevpage].nil? || session[:prevpage].blank?
+                redirect_to(default) 
+              else
+                redirect_to(session[:prevpage])
+              end
             end
     
             # Called from current_user.  Now, attempt to login by
