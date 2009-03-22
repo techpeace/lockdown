@@ -1,12 +1,15 @@
 module Lockdown
   module Session
+
     protected
 
     def add_lockdown_session_values
       user = current_user
 
-      session[:access_rights] = Lockdown::System.access_rights_for_user(user)
-      session[:current_user_id] = user.id
+      if user
+        session[:access_rights] = Lockdown::System.access_rights_for_user(user)
+        session[:current_user_id] = user.id
+      end
     end
 
     def current_user_id
@@ -39,10 +42,12 @@ module Lockdown
       session[:access_rights].include?(str)
     end
 
-    def nil_lockdown_values
+    def reset_lockdown_session
       [:expiry_time, :current_user_id, :access_rights].each do |val|
         session[val] = nil if session[val]
       end
     end 
+
+    alias_method :nil_lockdown_values, :reset_lockdown_session
   end # Session
 end # Lockdown
