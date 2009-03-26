@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), %w[.. .. .. spec_helper])
 
 class TestAController
   extend Lockdown::Frameworks::Rails::Controller
-  include Lockdown::Frameworks::Rails::Controller::Lock::InstanceMethods
+  include Lockdown::Frameworks::Rails::Controller::Lock
 end
 
 describe Lockdown::Frameworks::Rails::Controller do

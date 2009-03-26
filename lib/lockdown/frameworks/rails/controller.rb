@@ -18,13 +18,11 @@ module Lockdown
         # Locking methods
         module Lock
           def configure_lockdown
-            puts "============> configure_lockdown!!!!!!!"
             check_session_expiry
             store_location
           end
 
           def set_current_user
-            puts "============> set_current_user!!!!!!!"
             login_from_basic_auth? unless logged_in?
             if logged_in?
               Thread.current[:who_did_it] = Lockdown::System.
@@ -33,7 +31,6 @@ module Lockdown
           end
 
           def check_request_authorization
-            puts "============> checking request auth!!!!!!!"
             unless authorized?(path_from_hash(params))
               raise SecurityError, "Authorization failed for params #{params.inspect}"
             end
@@ -41,7 +38,6 @@ module Lockdown
   
           def path_allowed?(url)
             session[:access_rights] ||= Lockdown::System.public_access
-            puts "============> in path_allowed checking url: #{url}\nresult: #{session[:access_rights].include?(url)}"
             session[:access_rights].include?(url)
           end
     
