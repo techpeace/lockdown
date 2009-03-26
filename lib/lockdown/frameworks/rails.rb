@@ -20,6 +20,20 @@ module Lockdown
             include Lockdown::Frameworks::Rails::Controller::Lock
           end
 
+          Lockdown.controller_parent.helper_method :authorized?
+
+          Lockdown.controller_parent.before_filter do |c|
+            c.set_current_user
+            c.configure_lockdown
+            c.check_request_authorization
+          end
+
+          Lockdown.controller_parent.filter_parameter_logging :password, 
+            :password_confirmation
+      
+          Lockdown.controller_parent.rescue_from SecurityError, 
+            :with => proc{|e| access_denied(e)}
+
           Lockdown.view_helper.class_eval do
             include Lockdown::Frameworks::Rails::View
           end
