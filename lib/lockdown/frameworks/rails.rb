@@ -16,12 +16,14 @@ module Lockdown
 
         def mixin
           Lockdown.controller_parent.class_eval do
-            include Lockdown::Frameworks::Rails::Controller::Lock
             include Lockdown::Session
+            include Lockdown::Frameworks::Rails::Controller::Lock
           end
+
           Lockdown.view_helper.class_eval do
             include Lockdown::Frameworks::Rails::View
           end
+
           Lockdown::System.class_eval do 
             extend Lockdown::Frameworks::Rails::System
           end
@@ -67,6 +69,21 @@ module Lockdown
           @controller_classes = {}
          
           maybe_load_framework_controller_parent
+
+          ApplicationController.helper_method :authorized?
+
+          ApplicationController.before_filter do |c|
+            c.set_current_user
+            c.configure_lockdown
+            c.check_request_authorization
+          end
+
+          ApplicationController.filter_parameter_logging :password, 
+            :password_confirmation
+      
+          ApplicationController.rescue_from SecurityError, 
+            :with => proc{|e| access_denied(e)}
+
 
           Dir.chdir("#{Lockdown.project_root}/app/controllers") do
             Dir["**/*.rb"].sort.each do |c|
