@@ -5,12 +5,15 @@
 #
 #*** MUST add call to add_lockdown_session_values to your login method
 #
-#   # This method uses the current_user method.
-#   add_lockdown_session_values
-#
 #*** MAY NEED to add call to reset_lockdown_session to your logout method. 
 # ** Not needed if your authentication system resets the session
 #   
+# Definitely need to use the user_group and permission models.  The lockdown 
+# generator will provide those for you.  Just add the following to your user
+# model:
+#   has_and_belongs_to_many :user_groups
+#
+# That's it! 
 #
 #
 #                       ~~~~Method Descriptions~~~~
