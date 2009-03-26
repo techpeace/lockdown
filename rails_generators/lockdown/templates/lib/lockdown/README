@@ -3,8 +3,6 @@
 #
 #*** MUST define a current_user method that will return the current user object
 #
-#*** MUST define a logged_in? method that will return true if a user is logged in
-#
 #*** MUST add call to add_lockdown_session_values to your login method
 #
 #   # This method uses the current_user method.
@@ -20,6 +18,8 @@
 # The Lockdown gem defines these session methods:
 #
 # current_user_id: returns the id of the current_user
+#
+# logged_in? : returns true if current_user_id > 0
 #
 # current_user_is_admin?: returns true if user is assigned 
 # administrator rights.

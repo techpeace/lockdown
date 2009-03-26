@@ -12,6 +12,10 @@ module Lockdown
       end
     end
 
+    def logged_in?
+      current_user_id.to_i > 0
+    end
+
     def current_user_id
       session[:current_user_id]
     end
