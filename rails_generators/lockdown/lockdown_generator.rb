@@ -55,6 +55,7 @@ class LockdownGenerator < Rails::Generator::Base
       @m.directory @lib_path
 
       unless options[:skip_rules]
+        @m.file "lib/lockdown/README", "lib/lockdown/README"
         @m.file "lib/lockdown/init.rb", "lib/lockdown/init.rb"
       end
 
