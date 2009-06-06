@@ -69,16 +69,18 @@ module Lockdown
 
             url_parts = URI::split(url.strip)
 
-            url = url_parts[5]
+            path = url_parts[5]
 
-            return true if path_allowed?(url)
+            return true if path_allowed?(path)
 
             begin
-              hash = ActionController::Routing::Routes.recognize_path(url, :method => method)
+              hash = ActionController::Routing::Routes.recognize_path(path, :method => method)
               return path_allowed?(path_from_hash(hash)) if hash
             rescue Exception
               # continue on
             end
+
+            return true if url =~ /^mailto:/
 
             # Passing in different domain
             return remote_url?(url_parts[2])
