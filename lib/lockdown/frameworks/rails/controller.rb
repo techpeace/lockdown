@@ -80,7 +80,12 @@ module Lockdown
               # continue on
             end
 
+            # Mailto link
             return true if url =~ /^mailto:/
+
+            # Public file
+            file = File.join(RAILS_ROOT, 'public', url)
+            return true if File.exists?(file)
 
             # Passing in different domain
             return remote_url?(url_parts[2])
