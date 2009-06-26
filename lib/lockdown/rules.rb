@@ -5,7 +5,6 @@ module Lockdown
     attr_accessor :options
     attr_accessor :permissions
     attr_accessor :user_groups
-    attr_accessor :controller_classes
 
     attr_reader :protected_access 
     attr_reader :public_access
@@ -254,11 +253,22 @@ module Lockdown
     end
 
     def process_rules
-      parse_permissions
       validate_user_groups
+      parse_permissions
     end
 
     private
+
+    def validate_user_groups
+      user_groups.each do |user_group, perms|
+        perms.each do |perm|
+          unless permission_exists?(perm)
+            msg ="User Group: #{user_group}, permission not found: #{perm}"
+            raise InvalidRuleAssignment, msg
+          end
+        end
+      end
+    end
 
     def parse_permissions
       permission_objects.each do |name, perm|
@@ -272,6 +282,8 @@ module Lockdown
 
     def set_controller_access(perm)
       perm.controllers.each do |name, controller|
+        controller.set_access_methods
+
         @permissions[perm.name] |= controller.access_methods
 
         if perm.public_access?
@@ -283,39 +295,68 @@ module Lockdown
     end
 
     def set_model_access(perm)
-      perm.models.each do |model|
-        # Create inherited method on Lockdown.orm_parent that 
-        # will create a list of controller/actions the model
-      end
+      return if perm.models.empty?
 
-      # Create method to access that list for link_to call validation
-      #Lockdown.orm_parent.instance_eval <<-RUBY, __FILE__,__LINE__ + 1
-      #  def self.inherited(klass)
-      #    super
-      #
-      #  end
-      #RUBY
-
-      # Create inherited method on Lockdown.controller_parent that
-      # will setup before_filter 
-      #Lockdown.controller_parent.instance_eval <<-RUBY, __FILE__,__LINE__ + 1
-      #  def self.inherited(klass)
-      #    super
-      #
-      #  end
-      #RUBY
-    end
-
-
-    def validate_user_groups
-      user_groups.each do |user_group, perms|
-        perms.each do |perm|
-          unless permission_exists?(perm)
-            msg ="User Group: #{user_group}, permission not found: #{perm}"
-            raise InvalidRuleAssignment, msg
-          end
+      #Set filter for each controller
+      perm.controllers.each do |controller_name, controller|
+        #Set filter for each model on controller
+        perm.models.each do |model_name, model|
+          define_restrict_model_access(controller, model)
         end
       end
+    end
+
+=begin
+# alternate method
+    def define_restrict_model_access(controller, model)
+      controller_class = Lockdown.fetch_controller_class(controller.name)
+
+      methods = controller.
+                  access_methods.
+                    collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
+
+      controller_class.
+        before_filter "lockdown_#{model.name}_before_filter_test".to_sym, 
+          :only => methods
+
+      controller_class.send(:define_method, "lockdown_#{model.name}_before_filter_test") do
+          eval <<-RUBY
+            Rails.logger.info 'calling my before filter'
+            unless instance_variable_defined?(:@#{model.name})
+              @#{model.name} = #{model.class_name}.find(params[:id])
+            end
+        
+            unless @#{model.name}.#{model.association} #{model.controller_method}
+              raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
+            end
+          RUBY
+        end
+    end
+  end
+=end
+    def define_restrict_model_access(controller, model)
+      controller_class = Lockdown.fetch_controller_class(controller.name)
+
+      methods = controller.
+                  access_methods.
+                    collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
+
+      code = <<-RUBY
+        before_filter :lockdown_#{model.name}_before_filter_test, 
+          :only => #{methods}
+
+        def lockdown_#{model.name}_before_filter_test
+          Rails.logger.info 'calling my before filter'
+          unless instance_variable_defined?(:@#{model.name})
+            @#{model.name} = #{model.class_name}.find(params[:id])
+          end
+        
+          unless @#{model.name}.#{model.association} #{model.controller_method}
+            raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
+          end
+        end
+      RUBY
+      controller_class.class_eval code, __FILE__,__LINE__ +1
     end
   end
 end

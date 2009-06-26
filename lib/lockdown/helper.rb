@@ -49,24 +49,6 @@ module Lockdown
       :administrators
     end
 
-    def qualified_const_defined?(klass)
-      if klass =~ /::/
-        namespace, klass = klass.split("::")
-        eval("#{namespace}.const_defined?(#{klass})") if const_defined?(namespace)
-      else
-        const_defined?(klass)
-      end
-    end
-
-    def qualified_const_get(klass)
-      if klass =~ /::/
-        namespace, klass = klass.split("::")
-        eval(namespace).const_get(klass)
-      else
-        const_get(klass)
-      end
-    end
-
     private
 
     def string_name(str_sym)

@@ -4,11 +4,7 @@ module Lockdown
       module Controller
         
         def available_actions(klass)
-          if klass.respond_to?(:action_methods)
-            klass.action_methods
-          else
-            klass.public_instance_methods - klass.hidden_actions
-          end
+          klass.action_methods
         end
 
         def controller_name(klass)
@@ -32,7 +28,7 @@ module Lockdown
 
           def check_request_authorization
             unless authorized?(path_from_hash(params))
-              raise SecurityError, "Authorization failed for params #{params.inspect}"
+              raise SecurityError, "Authorization failed! \nparams: #{params.inspect}\nsession: #{session.inspect}"
             end
           end
   
@@ -76,7 +72,7 @@ module Lockdown
             begin
               hash = ActionController::Routing::Routes.recognize_path(path, :method => method)
               return path_allowed?(path_from_hash(hash)) if hash
-            rescue Exception
+            rescue Exception => e
               # continue on
             end
 
