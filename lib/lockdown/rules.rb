@@ -329,7 +329,7 @@ module Lockdown
               @#{model.name} = #{model.class_name}.find(params[:id])
             end
         
-            unless @#{model.name}.#{model.association} #{model.controller_method}
+            unless @#{model.name}.#{model.model_method}.#{model.association} #{model.controller_method}
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end
           end
