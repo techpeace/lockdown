@@ -15,8 +15,11 @@ module Lockdown
         end
         
         def mixin
-          mixin_controller(Lockdown.controller_parent)
-          #mixin_controller(ApplicationController)
+          if ::Rails.env == "production"
+            mixin_controller(ApplicationController)
+          else
+            mixin_controller
+          end
 
           Lockdown.view_helper.class_eval do
             include Lockdown::Frameworks::Rails::View
@@ -34,6 +37,8 @@ module Lockdown
           end
 
           klass.helper_method :authorized?
+
+          klass.hide_action(:set_current_user, :configure_lockdown, :check_request_authorization)
 
           klass.before_filter do |c|
             c.set_current_user

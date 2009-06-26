@@ -13,6 +13,7 @@ module Lockdown
 
         # Locking methods
         module Lock
+
           def configure_lockdown
             check_session_expiry
             store_location
@@ -31,6 +32,8 @@ module Lockdown
               raise SecurityError, "Authorization failed! \nparams: #{params.inspect}\nsession: #{session.inspect}"
             end
           end
+
+          protected 
   
           def path_allowed?(url)
             session[:access_rights] ||= Lockdown::System.public_access
