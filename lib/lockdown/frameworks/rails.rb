@@ -15,11 +15,7 @@ module Lockdown
         end
         
         def mixin
-          if ::Rails.env == "production"
-            mixin_controller(ApplicationController)
-          else
-            mixin_controller
-          end
+          mixin_controller
 
           Lockdown.view_helper.class_eval do
             include Lockdown::Frameworks::Rails::View
@@ -63,7 +59,11 @@ module Lockdown
         end
 
         def controller_parent
-          ::ActionController::Base
+          if ::Rails.env == "production"
+            ApplicationController
+          else
+            ::ActionController::Base
+          end
         end
 
         def view_helper

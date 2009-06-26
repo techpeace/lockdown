@@ -297,17 +297,24 @@ module Lockdown
     def set_model_access(perm)
       return if perm.models.empty?
 
+      Lockdown.controller_parent.before_filter :lockdown_model_before_filter_test
+
+      method_definition =  "\tdef lockdown_model_before_filter_test\n"
       #Set filter for each controller
       perm.controllers.each do |controller_name, controller|
         #Set filter for each model on controller
         perm.models.each do |model_name, model|
-          define_restrict_model_access(controller, model)
+          method_definition << define_restrict_model_access(controller, model)
         end
       end
+
+      method_definition << "\n\tend"
+
+      #puts "method_definition:\n #{method_definition}"
+
+      Lockdown.controller_parent.class_eval method_definition, __FILE__,__LINE__ +1
     end
 
-=begin
-# alternate method
     def define_restrict_model_access(controller, model)
       controller_class = Lockdown.fetch_controller_class(controller.name)
 
@@ -315,13 +322,9 @@ module Lockdown
                   access_methods.
                     collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
 
-      controller_class.
-        before_filter "lockdown_#{model.name}_before_filter_test".to_sym, 
-          :only => methods
-
-      controller_class.send(:define_method, "lockdown_#{model.name}_before_filter_test") do
-          eval <<-RUBY
-            Rails.logger.info 'calling my before filter'
+      return <<-RUBY
+        if controller_name == "#{controller.name}" 
+          if #{methods}.include?(action_name.to_sym)
             unless instance_variable_defined?(:@#{model.name})
               @#{model.name} = #{model.class_name}.find(params[:id])
             end
@@ -329,34 +332,9 @@ module Lockdown
             unless @#{model.name}.#{model.association} #{model.controller_method}
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end
-          RUBY
-        end
-    end
-  end
-=end
-    def define_restrict_model_access(controller, model)
-      controller_class = Lockdown.fetch_controller_class(controller.name)
-
-      methods = controller.
-                  access_methods.
-                    collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
-
-      code = <<-RUBY
-        before_filter :lockdown_#{model.name}_before_filter_test, 
-          :only => #{methods}
-
-        def lockdown_#{model.name}_before_filter_test
-          Rails.logger.info 'calling my before filter'
-          unless instance_variable_defined?(:@#{model.name})
-            @#{model.name} = #{model.class_name}.find(params[:id])
-          end
-        
-          unless @#{model.name}.#{model.association} #{model.controller_method}
-            raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
           end
         end
       RUBY
-      controller_class.class_eval code, __FILE__,__LINE__ +1
     end
   end
 end
