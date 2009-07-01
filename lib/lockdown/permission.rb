@@ -32,10 +32,11 @@ module Lockdown
   end
 
   class Model
-    attr_accessor :name, :controller_method, :model_method, :association
+    attr_accessor :name, :controller_method, :model_method, :association, :param
 
-    def initialize(name)
+    def initialize(name, param = :id)
       @name = name
+      @param = :id
     end
 
     def class_name
@@ -130,10 +131,10 @@ module Lockdown
       self
     end
 
-    def to_model(name_symbol)
+    def to_model(name_symbol, param = :id)
       validate_context
 
-      @models[name_symbol] = Model.new(name_symbol)
+      @models[name_symbol] = Model.new(name_symbol, param)
       @current_context = Lockdown::ModelContext.new(name_symbol)
       self
     end
