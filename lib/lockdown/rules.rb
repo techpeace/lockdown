@@ -310,7 +310,7 @@ module Lockdown
 
       method_definition << "\n\tend"
 
-      puts "method_definition:\n #{method_definition}"
+      #puts "method_definition:\n #{method_definition}"
 
       Lockdown.controller_parent.class_eval method_definition, __FILE__,__LINE__ +1
     end
@@ -323,7 +323,6 @@ module Lockdown
                     collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
 
       return <<-RUBY
-        puts "*"*80
         if controller_name == "#{controller.name}" 
           if #{methods}.include?(action_name.to_sym)
             unless instance_variable_defined?(:@#{model.name})
