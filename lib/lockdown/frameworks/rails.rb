@@ -40,6 +40,7 @@ module Lockdown
             c.set_current_user
             c.configure_lockdown
             c.check_request_authorization
+            c.check_model_authorization
           end
 
           klass.filter_parameter_logging :password, :password_confirmation
