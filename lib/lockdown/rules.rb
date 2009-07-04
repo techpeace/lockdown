@@ -273,11 +273,10 @@ module Lockdown
     def parse_permissions
       permission_objects.each do |name, perm|
         @permissions[perm.name] ||= []
-
         set_controller_access(perm)
-
-        set_model_access(perm)
       end
+
+      set_model_access
     end
 
     def set_controller_access(perm)
@@ -294,25 +293,30 @@ module Lockdown
       end
     end
 
-    def set_model_access(perm)
-      return if perm.models.empty?
+    def set_model_access
+      method_definition =  "\tdef lockdown_model_before_filter_test\n\t#This method will check for access to model resources\n"
 
-      Lockdown.controller_parent.before_filter :lockdown_model_before_filter_test
+      permission_objects.each do |name, perm|
+        next if perm.models.empty?
 
-      method_definition =  "\tdef lockdown_model_before_filter_test\n"
-      #Set filter for each controller
-      perm.controllers.each do |controller_name, controller|
-        #Set filter for each model on controller
-        perm.models.each do |model_name, model|
-          method_definition << define_restrict_model_access(controller, model)
+        #Set filter for each controller
+        perm.controllers.each do |controller_name, controller|
+          #Set filter for each model on controller
+          perm.models.each do |model_name, model|
+            method_definition << define_restrict_model_access(controller, model)
+          end
         end
       end
 
       method_definition << "\n\tend"
 
-      #puts "method_definition:\n #{method_definition}"
+      puts "method_definition:\n #{method_definition}"
 
-      Lockdown.controller_parent.class_eval method_definition, __FILE__,__LINE__ +1
+      Lockdown.add_controller_method method_definition
+
+      Lockdown.controller_parent.before_filter do |c|
+        c.lockdown_model_before_filter_test
+      end
     end
 
     def define_restrict_model_access(controller, model)
@@ -323,12 +327,14 @@ module Lockdown
                     collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
 
       return <<-RUBY
+        puts "==========> controller_name: \#{controller_name}"
         if controller_name == "#{controller.name}" 
           if #{methods}.include?(action_name.to_sym)
             unless instance_variable_defined?(:@#{model.name})
               @#{model.name} = #{model.class_name}.find(params[#{model.param.inspect}])
             end
-        
+            # Need to make sure we find the model first before checking admin status. 
+            return true if current_user_is_admin? 
             unless #{model.controller_method}.#{model.association}(@#{model.name}.#{model.model_method})
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end

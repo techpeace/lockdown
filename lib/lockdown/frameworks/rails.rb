@@ -58,16 +58,24 @@ module Lockdown
           "#{project_root}/lib/lockdown/init.rb"
         end
 
+        def view_helper
+          ::ActionView::Base 
+        end
+
+        # cache_classes is true in production and testing, need to
+        # modify the ApplicationController 
         def controller_parent
-          if ::Rails.env == "production"
-            ApplicationController
+          if ::Rails.env == 'development'
+            ActionController::Base
           else
-            ::ActionController::Base
+            ApplicationController
           end
         end
 
-        def view_helper
-          ::ActionView::Base 
+        # cache_classes is true in production and testing, need to
+        # do an instance eval instead
+        def add_controller_method(code)
+          Lockdown.controller_parent.class_eval code, __FILE__,__LINE__ +1
         end
 
         def controller_class_name(str)
