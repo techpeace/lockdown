@@ -158,7 +158,7 @@ module Lockdown
     def is_in(controller_method)
       validate_context
 
-      associate_controller_method(controller_method, :includes?)
+      associate_controller_method(controller_method, :include?)
       @current_context = Lockdown::RootContext.new(@name)
       self
     end
