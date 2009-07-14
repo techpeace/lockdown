@@ -253,8 +253,8 @@ module Lockdown
     end
 
     def process_rules
-      validate_user_groups
       parse_permissions
+      validate_user_groups
     end
 
     private
