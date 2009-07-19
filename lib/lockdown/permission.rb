@@ -36,7 +36,7 @@ module Lockdown
 
     def initialize(name, param = :id)
       @name = name
-      @param = :id
+      @param = param
     end
 
     def class_name
