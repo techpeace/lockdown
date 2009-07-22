@@ -330,7 +330,7 @@ module Lockdown
             end
             # Need to make sure we find the model first before checking admin status. 
             return true if current_user_is_admin? 
-            unless #{model.controller_method}.#{model.association}(@#{model.name}.#{model.model_method})
+            unless @#{model.name}.#{model.model_method}.#{model.association}(#{model.controller_method})
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end
           end
