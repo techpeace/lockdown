@@ -66,10 +66,10 @@ module Lockdown
         # cache_classes is true in production and testing, need to
         # modify the ApplicationController 
         def controller_parent
-          if ::Rails.env == 'development'
-            ActionController::Base
-          else
+          if ::Rails.configuration.cache_classes
             ApplicationController
+          else
+            ActionController::Base
           end
         end
 
