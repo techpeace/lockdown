@@ -320,7 +320,9 @@ module Lockdown
 
       methods = controller.
                   access_methods.
-                    collect{|am| am[am.index('/') + 1..-1].to_sym}.inspect
+                    collect do |am| 
+                      am[am.index('/') + 1..-1].to_sym if am.index('/')
+                    end.compact.inspect
 
       return <<-RUBY
         if controller_name == "#{controller.name}" 

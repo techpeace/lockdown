@@ -88,7 +88,7 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
 
   describe "#path_allowed" do
     it "should return false for an invalid path" do
-      @controller.path_allowed?("/no/good").should be_false
+      @controller.send(:path_allowed?,"/no/good").should be_false
     end
   end
 
@@ -96,7 +96,7 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
     it "should set expiry if null" do
       Lockdown::System.stub!(:fetch).with(:session_timeout).and_return(10)
       @session[:expiry_time].should be_nil
-      @controller.check_session_expiry
+      @controller.send(:check_session_expiry)
       @session[:expiry_time].should_not be_nil
     end
   end
@@ -108,7 +108,7 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
       @controller.stub!(:request).and_return(request)
 
       @controller.stub!(:sent_from_uri).and_return("/blop")
-      @controller.store_location
+      @controller.send(:store_location)
 
       @session[:prevpage].should == ''
       @session[:thispage].should == '/blop'
@@ -122,7 +122,7 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
 
       @controller.stub!(:request).and_return(request)
 
-      @controller.sent_from_uri.should == "/blip"
+      @controller.sent(:sent_from_uri).should == "/blip"
     end
   end
 
@@ -146,20 +146,20 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
     end
 
     it "should return false if url is nil" do
-      @controller.authorized?(nil).should be_false
+      @controller.send(:authorized?,nil).should be_false
     end
 
     it "should return true if current_user_is_admin" do
       @controller.stub!(:current_user_is_admin?).and_return(true)
-      @controller.authorized?(@a_path).should be_true
+      @controller.send(:authorized?,@a_path).should be_true
     end
 
     it "should return false if path not in access_rights" do
-      @controller.authorized?(@a_path).should be_false
+      @controller.send(:authorized?,@a_path).should be_false
     end
 
     it "should return true if path is in access_rights" do
-      @controller.authorized?(@sample_url).should be_true
+      @controller.send(:authorized?,@sample_url).should be_true
     end
 
   end
@@ -170,34 +170,34 @@ describe Lockdown::Frameworks::Rails::Controller::Lock do
   describe "#path_from_hash" do
     it "should return controller/action string" do
       hash = {:controller => "users", :action => "show", :id => "1"}
-      @controller.path_from_hash(hash).should == "users/show"
+      @controller.send(:path_from_hash,hash).should == "users/show"
     end
   end
 
   describe "#remote_url?" do
     it "should return false if domain is nil" do
-      @controller.remote_url?.should be_false
+      @controller.send(:remote_url?).should be_false
     end
 
     it "should return false if domain matches request domain" do
       request = mock("request")
       request.stub!(:host).and_return("stonean.com")
       @controller.stub!(:request).and_return(request)
-      @controller.remote_url?("stonean.com").should be_false
+      @controller.send(:remote_url?,"stonean.com").should be_false
     end
 
     it "should return true if subdomain differs" do
       request = mock("request")
       request.stub!(:host).and_return("blog.stonean.com")
       @controller.stub!(:request).and_return(request)
-      @controller.remote_url?("stonean.com").should be_true
+      @controller.send(:remote_url?,"stonean.com").should be_true
     end
 
     it "should return true if host doesn't match  domain" do
       request = mock("request")
       request.stub!(:host).and_return("stonean.com")
       @controller.stub!(:request).and_return(request)
-      @controller.remote_url?("google.com").should be_true
+      @controller.send(:remote_url?,"google.com").should be_true
     end
   end
 
