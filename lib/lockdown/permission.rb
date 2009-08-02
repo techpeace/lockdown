@@ -17,13 +17,14 @@ module Lockdown
         @access_methods = paths_for(@name)
       end
 
-      apply_exceptions
+      apply_exceptions if @except_methods.length > 0
     end
 
     private
 
     def apply_exceptions
-      @access_methods = @access_methods - @except_methods
+      exceptions = paths_for(@name, *@except_methods)
+      @access_methods = @access_methods - exceptions
     end
 
     def paths_for(str_sym, *methods)
