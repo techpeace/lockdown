@@ -31,7 +31,9 @@ module Lockdown
         :successful_login_path => "/",
         :subdirectory => nil,
         :skip_db_sync_in => ["test"],
-        :link_separator => ' | '
+        :link_separator => ' | ',
+        :user_group_model => ::UserGroup,
+        :user_model => ::User
       }
     end
 
@@ -143,7 +145,8 @@ module Lockdown
     # Pass in a user object to be associated to the administrator user group 
     # The group will be created if it doesn't exist
     def make_user_administrator(usr)
-      usr.user_groups << UserGroup.
+      user_groups = usr.send(Lockdown.user_groups_hbtm_reference)
+      user_groups << Lockdown::System.fetch(:user_group_model).
         find_or_create_by_name(Lockdown.administrator_group_string)
     end
 
@@ -160,7 +163,8 @@ module Lockdown
 
       rights = standard_authorized_user_rights
         
-      usr.user_groups.each do |grp|
+      user_groups = usr.send(Lockdown.user_groups_hbtm_reference)
+      user_groups.each do |grp|
         permissions_for_user_group(grp).each do |perm|
           rights += access_rights_for_permission(perm) 
         end
@@ -185,7 +189,8 @@ module Lockdown
 
     # Pass in user object and symbol for name of user group
     def user_has_user_group?(usr, sym)
-      usr.user_groups.any? do |ug|
+      user_groups = usr.send(Lockdown.user_groups_hbtm_reference)
+      user_groups.any? do |ug|
         Lockdown.convert_reference_name(ug.name) == sym
       end
     end
@@ -197,11 +202,11 @@ module Lockdown
       return [] if usr.nil?
         
       if administrator?(usr)
-        UserGroup.find_by_sql <<-SQL
+        Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
           select user_groups.* from user_groups order by user_groups.name
         SQL
       else
-        UserGroup.find_by_sql <<-SQL
+        Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
             select user_groups.* from user_groups, user_groups_users
              where user_groups.id = user_groups_users.user_group_id
              and user_groups_users.user_id = #{usr.id}	 

@@ -5,12 +5,19 @@ Lockdown::System.configure do
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Options with defaults:
   #
-  # Set who_did_it method
+  #
+  # Set User model:
+  #      options[:user_model] = User
+  #
+  # Set UserGroup model:
+  #      options[:user_group_model] = UserGroup
+  #
+  # Set who_did_it method:
   #   This method is used in setting the created_by/updated_by fields and
   #   should be accessible to the controller
   #      options[:who_did_it] = :current_user_id
   #
-  # Set default_who_did_it
+  # Set default_who_did_it:
   #   When current_user_id returns nil, this is the value to use
   #      options[:default_who_did_it] = 1
   #
