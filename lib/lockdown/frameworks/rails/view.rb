@@ -15,7 +15,7 @@ module Lockdown
         def link_to_secured(name, options = {}, html_options = nil)
           url = url_for(options)
 
-          method = html_options ? html_options[:method] : nil
+          method = html_options ? html_options[:method] : :get
 
           if authorized?(url, method)
             return link_to_open(name, url, html_options)
@@ -26,7 +26,7 @@ module Lockdown
         def button_to_secured(name, options = {}, html_options = nil)
           url = url_for(options)
 
-          method = html_options ? html_options[:method] : nil
+          method = html_options ? html_options[:method] : :get
 
           if authorized?(url, method)
             return button_to_open(name, url, html_options)
