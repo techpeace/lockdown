@@ -31,10 +31,15 @@ module Lockdown
         :successful_login_path => "/",
         :subdirectory => nil,
         :skip_db_sync_in => ["test"],
-        :link_separator => ' | ',
-        :user_group_model => ::UserGroup,
-        :user_model => ::User
+        :link_separator => ' | '
       }
+
+      begin
+        @options[:user_group_model] = ::UserGroup
+        @options[:user_model] = ::User 
+      rescue NameError 
+      end
+      
     end
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
