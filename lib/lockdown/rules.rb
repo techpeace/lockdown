@@ -36,6 +36,10 @@ module Lockdown
 
       begin
         @options[:user_group_model] = ::UserGroup
+      rescue NameError 
+      end
+
+      begin
         @options[:user_model] = ::User 
       rescue NameError 
       end
