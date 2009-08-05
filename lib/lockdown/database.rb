@@ -42,7 +42,7 @@ module Lockdown
           if "permissions" < ug_table
             join_table = "permissions_#{ug_table}"
           else
-            join_table = "#{ug_table}_permissions}"
+            join_table = "#{ug_table}_permissions"
           end
             Lockdown.database_execute("delete from #{join_table} where permission_id = #{dbp.id}")
             dbp.destroy
@@ -78,7 +78,7 @@ module Lockdown
           if "permissions" < ug_table
             join_table = "permissions_#{ug_table}"
           else
-            join_table = "#{ug_table}_permissions}"
+            join_table = "#{ug_table}_permissions"
           end
           Lockdown.database_execute "insert into #{join_table}(permission_id, #{Lockdown.user_group_id_reference}) values(#{p.id}, #{ug.id})"
         end
