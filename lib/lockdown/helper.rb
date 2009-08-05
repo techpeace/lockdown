@@ -19,7 +19,7 @@ module Lockdown
     end
 
     def user_group_id_reference
-      underscore(Lockdown::System.fetch(:user_group_model).to_s)
+      underscore(Lockdown::System.fetch(:user_group_model).to_s) + "_id"
     end
 
     def users_hbtm_reference
@@ -27,7 +27,7 @@ module Lockdown
     end
 
     def user_id_reference
-      underscore(Lockdown::System.fetch(:user_model).to_s)
+      underscore(Lockdown::System.fetch(:user_model).to_s) + "_id"
     end
 
     def get_string(value)
