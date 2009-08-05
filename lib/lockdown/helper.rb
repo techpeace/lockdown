@@ -18,6 +18,18 @@ module Lockdown
       underscore(Lockdown::System.fetch(:user_group_model).to_s).pluralize.to_sym
     end
 
+    def user_group_id_reference
+      underscore(Lockdown::System.fetch(:user_group_model).to_s)
+    end
+
+    def users_hbtm_reference
+      underscore(Lockdown::System.fetch(:user_model).to_s).pluralize.to_sym
+    end
+
+    def user_id_reference
+      underscore(Lockdown::System.fetch(:user_model).to_s)
+    end
+
     def get_string(value)
       if value.respond_to?(:name)
         string_name(value.name)

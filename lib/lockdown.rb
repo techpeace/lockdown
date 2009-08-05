@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "lockdown", "helper")
 module Lockdown
   extend Lockdown::Helper
 
-  VERSION = '1.1.2'
+  VERSION = '1.1.3'
 
   # Returns the version string for the library.
   def self.version

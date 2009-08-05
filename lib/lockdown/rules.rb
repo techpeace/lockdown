@@ -209,17 +209,23 @@ module Lockdown
     # him/her self.
     def user_groups_assignable_for_user(usr)
       return [] if usr.nil?
-        
+      ug_table = Lockdown.user_groups_hbtm_reference.to_s
       if administrator?(usr)
         Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
-          select user_groups.* from user_groups order by user_groups.name
+          select #{ug_table}.* from #{ug_table} order by #{ug_table}.name
         SQL
       else
+        usr_table = Lockdown.users_hbtm_reference.to_s
+        if usr_table < ug_table
+          join_table = "#{usr_table}_#{ug_table}"
+        else
+          join_table = "#{ug_table}_#{usr_table}"
+        end
         Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
-            select user_groups.* from user_groups, user_groups_users
-             where user_groups.id = user_groups_users.user_group_id
-             and user_groups_users.user_id = #{usr.id}	 
-             order by user_groups.name
+            select #{ug_table}.* from #{ug_table}, #{join_table}
+             where #{ug_table}.id = #{join_table}.#{Lockdown.user_group_id_reference}
+             and #{join_table}.#{Lockdown.user_id_reference} = #{usr.id}	 
+             order by #{ug_table}.name
         SQL
       end
     end
