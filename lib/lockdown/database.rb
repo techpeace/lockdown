@@ -38,7 +38,13 @@ module Lockdown
         db_perms.each do |dbp|
           unless @permissions.include?(Lockdown.get_symbol(dbp.name))
             puts ">> Lockdown: Permission no longer in init.rb: #{dbp.name}, deleting."
-            Lockdown.database_execute("delete from permissions_user_groups where permission_id = #{dbp.id}")
+          ug_table = Lockdown.user_groups_hbtm_reference.to_s
+          if "permissions" < ug_table
+            join_table = "permissions_#{ug_table}"
+          else
+            join_table = "#{ug_table}_permissions}"
+          end
+            Lockdown.database_execute("delete from #{join_table} where permission_id = #{dbp.id}")
             dbp.destroy
           end
         end
@@ -68,7 +74,13 @@ module Lockdown
           p = ::Permission.find(:first, :conditions => ["name = ?", 
                                 Lockdown.get_string(perm)])
 
-          Lockdown.database_execute "insert into permissions_user_groups(permission_id, user_group_id) values(#{p.id}, #{ug.id})"
+          ug_table = Lockdown.user_groups_hbtm_reference.to_s
+          if "permissions" < ug_table
+            join_table = "permissions_#{ug_table}"
+          else
+            join_table = "#{ug_table}_permissions}"
+          end
+          Lockdown.database_execute "insert into #{join_table}(permission_id, #{Lockdown.user_group_id_reference}) values(#{p.id}, #{ug.id})"
         end
       end
 
