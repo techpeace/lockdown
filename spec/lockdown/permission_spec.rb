@@ -57,6 +57,16 @@ describe Lockdown::Permission do
     end
   end
 
+  describe "#with_proc" do
+    before do
+      @permission.to_model(:user).with_proc
+    end
+
+    it "should set current_context to ModelWithProcContext" do
+      @permission.current_context.should be_an_instance_of(Lockdown::ModelWithProcContext)
+    end
+  end
+
   describe "#equals" do
     before do
       @permission.to_model(:user).where(:current_user_id).equals(:id)

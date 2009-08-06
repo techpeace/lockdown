@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'ruby2ruby'
+require 'parse_tree_extensions'
 require File.join(File.dirname(__FILE__), "lockdown", "helper")
 
 module Lockdown

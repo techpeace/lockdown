@@ -28,7 +28,7 @@ module Lockdown
   class ModelContext < Context
     def initialize(name)
       @name = name
-      @allowed_methods = %w(where)
+      @allowed_methods = %w(where with_proc)
     end
   end
 
@@ -36,6 +36,13 @@ module Lockdown
     def initialize(name)
       @name = name
       @allowed_methods = %w(is_in includes equals)
+    end
+  end
+
+  class ModelWithProcContext < Context
+    def initialize(name)
+      @name = name
+      @allowed_methods = []
     end
   end
 end

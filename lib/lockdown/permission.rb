@@ -33,7 +33,7 @@ module Lockdown
   end
 
   class Model
-    attr_accessor :name, :controller_method, :model_method, :association, :param
+    attr_accessor :name, :controller_method, :model_method, :association, :param, :proc_object
 
     def initialize(name, param = :id)
       @name = name
@@ -161,6 +161,15 @@ module Lockdown
 
       associate_controller_method(controller_method, :include?)
       @current_context = Lockdown::RootContext.new(@name)
+      self
+    end
+
+    # allows you to pass in a proc object to do complex authorization control
+    def with_proc(&block)
+      validate_context
+
+      current_model.proc_object = Proc.new(&block)
+      @current_context = Lockdown::ModelWithProcContext.new(current_context.name)
       self
     end
 
