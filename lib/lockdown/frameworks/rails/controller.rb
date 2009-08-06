@@ -39,7 +39,15 @@ module Lockdown
   
           def path_allowed?(url)
             session[:access_rights] ||= Lockdown::System.public_access
-            session[:access_rights].include?(url)
+#
+# If it isn't in the list of non-nested url's,
+# try matching the allowed path with /controller_name/nnn/ tacked onto the front
+#
+            if ret = session[:access_rights].include?(url)
+              return ret
+            else
+             return !session[:access_rights].detect { |v| url =~ /\/\w+\/\d+\/#{v}/ }.nil?
+            end
           end
     
           def check_session_expiry
