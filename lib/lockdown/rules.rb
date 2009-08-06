@@ -35,12 +35,12 @@ module Lockdown
       }
 
       begin
-        @options[:user_group_model] = ::UserGroup
+        @options[:user_group_model] = "UserGroup"
       rescue NameError 
       end
 
       begin
-        @options[:user_model] = ::User 
+        @options[:user_model] = "User" 
       rescue NameError 
       end
       
@@ -155,7 +155,7 @@ module Lockdown
     # The group will be created if it doesn't exist
     def make_user_administrator(usr)
       user_groups = usr.send(Lockdown.user_groups_hbtm_reference)
-      user_groups << Lockdown::System.fetch(:user_group_model).
+      user_groups << Lockdown.user_group_class.
         find_or_create_by_name(Lockdown.administrator_group_string)
     end
 
@@ -211,7 +211,7 @@ module Lockdown
       return [] if usr.nil?
       ug_table = Lockdown.user_groups_hbtm_reference.to_s
       if administrator?(usr)
-        Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
+        Lockdown.user_group_class.find_by_sql <<-SQL
           select #{ug_table}.* from #{ug_table} order by #{ug_table}.name
         SQL
       else
@@ -221,7 +221,7 @@ module Lockdown
         else
           join_table = "#{ug_table}_#{usr_table}"
         end
-        Lockdown::System.fetch(:user_group_model).find_by_sql <<-SQL
+        Lockdown.user_group_class.find_by_sql <<-SQL
             select #{ug_table}.* from #{ug_table}, #{join_table}
              where #{ug_table}.id = #{join_table}.#{Lockdown.user_group_id_reference}
              and #{join_table}.#{Lockdown.user_id_reference} = #{usr.id}	 

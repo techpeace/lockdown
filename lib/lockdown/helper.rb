@@ -14,20 +14,28 @@ module Lockdown
       end
     end
 
+    def user_group_class
+      eval(Lockdown::System.fetch(:user_group_model))
+    end
+
     def user_groups_hbtm_reference
-      underscore(Lockdown::System.fetch(:user_group_model).to_s).pluralize.to_sym
+      underscore(Lockdown::System.fetch(:user_group_model)).pluralize.to_sym
     end
 
     def user_group_id_reference
-      underscore(Lockdown::System.fetch(:user_group_model).to_s) + "_id"
+      underscore(Lockdown::System.fetch(:user_group_model)) + "_id"
+    end
+
+    def user_class
+      eval(Lockdown::System.fetch(:user_model))
     end
 
     def users_hbtm_reference
-      underscore(Lockdown::System.fetch(:user_model).to_s).pluralize.to_sym
+      underscore(Lockdown::System.fetch(:user_model)).pluralize.to_sym
     end
 
     def user_id_reference
-      underscore(Lockdown::System.fetch(:user_model).to_s) + "_id"
+      underscore(Lockdown::System.fetch(:user_model)) + "_id"
     end
 
     def get_string(value)

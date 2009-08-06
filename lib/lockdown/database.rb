@@ -54,7 +54,7 @@ module Lockdown
         # Create user groups not found in the database
         @user_groups.each do |key|
           str = Lockdown.get_string(key)
-          unless ug = Lockdown::System.fetch(:user_group_model).find(:first, :conditions => ["name = ?", str])
+          unless ug = Lockdown.user_group_class.find(:first, :conditions => ["name = ?", str])
             create_user_group(str, key)
           else
             # Remove permissions from user group not found in init.rb
@@ -68,7 +68,7 @@ module Lockdown
 
       def create_user_group(name_str, key)
         puts ">> Lockdown: #{Lockdown::System.fetch(:user_group_model)} not in the db: #{name_str}, creating."
-        ug = Lockdown::System.fetch(:user_group_model).create(:name => name_str)
+        ug = Lockdown.user_group_class.create(:name => name_str)
         #Inefficient, definitely, but shouldn't have any issues across orms.
         Lockdown::System.permissions_for_user_group(key).each do |perm|
           p = ::Permission.find(:first, :conditions => ["name = ?", 
