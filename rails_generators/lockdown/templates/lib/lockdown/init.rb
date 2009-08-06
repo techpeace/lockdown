@@ -7,10 +7,12 @@ Lockdown::System.configure do
   #
   #
   # Set User model:
-  #      options[:user_model] = User
+  #      # make sure you use the string "User", not the constant
+  #      options[:user_model] = "User"
   #
   # Set UserGroup model:
-  #      options[:user_group_model] = UserGroup
+  #      # make sure you use the string "UserGroup", not the constant
+  #      options[:user_group_model] = "UserGroup"
   #
   # Set who_did_it method:
   #   This method is used in setting the created_by/updated_by fields and
