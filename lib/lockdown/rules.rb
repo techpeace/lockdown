@@ -361,6 +361,7 @@ module Lockdown
       RUBY
     end
 
+    # generates the metaprogram string for allowing +with_proc+ in the lib/lockdown/init.rb
     def generate_proc_string(model)
       # spaces need to properly format the code
       spaces = (1..12).to_a.collect { " " }.join
