@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
      "lib/lockdown/rules.rb",
      "lib/lockdown/session.rb",
      "lib/lockdown/system.rb",
+     "lockdown.gemspec",
      "rails_generators/lockdown/lockdown_generator.rb",
      "rails_generators/lockdown/templates/app/controllers/permissions_controller.rb",
      "rails_generators/lockdown/templates/app/controllers/sessions_controller.rb",
