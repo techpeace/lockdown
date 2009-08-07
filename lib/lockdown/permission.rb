@@ -165,8 +165,8 @@ module Lockdown
     end
 
     # allows you to pass in a proc object to do complex authorization control
-    # it is called from a +to_model+ method.  the to_model's model 
-    # and the with_controller's controller
+    # it is called from a +to_model+ method.  the +to_model+'s model 
+    # and the +with_controller+'s controller
     # i.e. set_permission(:permission).
     #        with_controller(:controller).
     #        to_model(:model).
