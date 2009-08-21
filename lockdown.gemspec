@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{lockdown}
-  s.version = "1.2.1"
+  s.version = "1.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
-  s.date = %q{2009-08-06}
+  s.date = %q{2009-08-21}
   s.description = %q{Lockdown is an authorization system for RubyOnRails (ver >= 2.1).}
   s.email = %q{andy@stonean.com}
   s.extra_rdoc_files = [
