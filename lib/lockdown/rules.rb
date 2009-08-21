@@ -27,6 +27,8 @@ module Lockdown
         :who_did_it => :current_user_id,
         :default_who_did_it => 1,
         :logout_on_access_violation => false,
+        :access_denied_path_authorized => nil,
+        :access_denied_path_public => nil,
         :access_denied_path => "/",
         :successful_login_path => "/",
         :subdirectory => nil,

@@ -110,7 +110,7 @@ module Lockdown
             respond_to do |format|
               format.html do
                 store_location
-                redirect_to Lockdown::System.fetch(:access_denied_path)
+                redirect_to access_denied_path
                 return
               end
               format.xml do
@@ -119,6 +119,18 @@ module Lockdown
                 render :text => e.message, :status => "401 Unauthorized"
                 return
               end
+            end
+          end
+
+          def access_denied_path
+            if Lockdown::System.fetch(:access_denied_path_authorized) and Lockdown::System.fetch(:access_denied_path_public)
+              if logged_in?
+                Lockdown::System.fetch(:access_denied_path_authorized)
+              else
+                Lockdown::System.fetch(:access_denied_path_public)
+              end
+            else
+              Lockdown::System.fetch(:access_denied_path)
             end
           end
 
