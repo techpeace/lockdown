@@ -123,9 +123,9 @@ module Lockdown
           end
 
           def access_denied_path
-            if Lockdown::System.fetch(:access_denied_path_authorized) and Lockdown::System.fetch(:access_denied_path_public)
+            if Lockdown::System.fetch(:access_denied_path_authenticated) and Lockdown::System.fetch(:access_denied_path_public)
               if logged_in?
-                Lockdown::System.fetch(:access_denied_path_authorized)
+                Lockdown::System.fetch(:access_denied_path_authenticated)
               else
                 Lockdown::System.fetch(:access_denied_path_public)
               end
