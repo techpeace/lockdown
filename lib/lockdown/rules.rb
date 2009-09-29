@@ -352,12 +352,9 @@ module Lockdown
             unless instance_variable_defined?(:@#{model.name})
               @#{model.name} = #{model.class_name}.find(params[#{model.param.inspect}])
             end
-#{generate_proc_string(model)}
             # Need to make sure we find the model first before checking admin status. 
             return true if current_user_is_admin? 
-            unless @#{model.name}.#{model.model_method}.#{model.association}(#{model.controller_method})
-              raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
-            end
+#{generate_proc_string(model)}
           end
         end
       RUBY
@@ -374,6 +371,12 @@ module Lockdown
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end
 PROC_STRING
+      else
+        <<MODEL_RESTRICTION
+            unless @#{model.name}.#{model.model_method}.#{model.association}(#{model.controller_method})
+              raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
+            end
+MODEL_RESTRICTION
       end
     end
   end
