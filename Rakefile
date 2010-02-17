@@ -8,6 +8,7 @@ begin
     gemspec.homepage = "http://stonean.com/wiki/lockdown"
     gemspec.authors = ["Andrew Stone"]
     gemspec.add_dependency 'ruby2ruby'
+    gemspec.add_dependency 'ParseTree' # ruby2ruby doesn't install it properly
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
