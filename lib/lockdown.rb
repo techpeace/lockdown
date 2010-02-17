@@ -67,7 +67,3 @@ require File.join(File.dirname(__FILE__), "lockdown", "database")
 require File.join(File.dirname(__FILE__), "lockdown", "rules")
 require File.join(File.dirname(__FILE__), "lockdown", "system")
 
-puts "=> Mixing in Lockdown version: #{Lockdown.version} \n"
-
-Lockdown.mixin
-
