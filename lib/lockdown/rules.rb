@@ -343,14 +343,15 @@ module Lockdown
       methods = controller.
                   access_methods.
                     collect do |am| 
-                      am[am.index('/') + 1..-1].to_sym if am.index('/')
+                      am.split('/').last.to_sym if am.index('/')
                     end.compact.inspect
 
       return <<-RUBY
-        if controller_name == "#{controller.name}" 
+        if controller_path == "#{controller.name.to_s.sub('__', '/')}"
           if #{methods}.include?(action_name.to_sym)
             unless instance_variable_defined?(:@#{model.name})
-              @#{model.name} = #{model.class_name}.find(params[#{model.param.inspect}])
+              # need to run .to_i on params, in case passing in a string and PG doesn't like this.
+              @#{model.name} = #{model.class_name}.find_by_id(params[#{model.param.inspect}].to_i)
             end
             # Need to make sure we find the model first before checking admin status. 
             return true if current_user_is_admin? 
@@ -361,6 +362,7 @@ module Lockdown
     end
 
     # generates the metaprogram string for allowing +with_proc+ in the lib/lockdown/init.rb
+    # only generates the proc string or the model restriction logic
     def generate_proc_string(model)
       # spaces need to properly format the code
       spaces = (1..12).to_a.collect { " " }.join
@@ -373,6 +375,9 @@ module Lockdown
 PROC_STRING
       else
         <<MODEL_RESTRICTION
+            if @#{model.name}.nil?
+              raise ActiveRecord::RecordNotFound, 'Invalid #{model.name} id provided'
+            end
             unless @#{model.name}.#{model.model_method}.#{model.association}(#{model.controller_method})
               raise SecurityError, "Access to #\{action_name\} denied to #{model.name}.id #\{@#{model.name}.id\}"
             end
