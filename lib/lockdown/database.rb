@@ -26,7 +26,6 @@ module Lockdown
           str = Lockdown.get_string(key)
           p = ::Permission.find(:first, :conditions => ["name = ?", str])
           unless p
-            puts ">> Lockdown: Permission not found in db: #{str}, creating."
             ::Permission.create(:name => str)
           end
         end
